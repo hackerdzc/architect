@@ -9,13 +9,14 @@
 <div class="printmode" id="pm"></div>
 <div class="hd"><h1>1級建築士製図試験　記述練習</h1>
 <div class="sb">分類を選ぶ → 切り口で引く → 一文で覚える → 弱い枠だけ隠して試す</div>
-<div class="lg">太字＝キーワード　数字＝<b>赤</b>　開いた空欄＝<span class="g">緑</span>　<span class="src">T</span>＝TAC　<span class="src">S</span>＝総合　<span class="src both">T·S</span>＝両校一致　<span class="src gen">般</span>＝一般に問われる論点</div></div>
+<div class="lg">太字＝キーワード　数字＝<b>赤</b>　開いた空欄＝<span class="g">緑</span>　<span class="src">T</span>＝TAC　<span class="src">S</span>＝総合　<span class="src both">T·S</span>＝両校一致　<span class="src gen">般</span>＝一般に問われる論点　<span class="src kizon">既</span>＝既存部との配慮</div></div>
 
 <div class="tabs" role="tablist" id="tabs"></div>
 <div class="box"><h2>目的は思い出す枠ではなく、選ぶ枠</h2>
 <div class="ex"><span class="t">各客室の窓面は、</span><span class="p">快適性に配慮して、</span><span class="j">広く確保した。</span></div>
 <div class="nt">目的の骨格は <b>性能語 ＋ 接続</b> の2つだけ。性能語は閉じた集合なので、真ん中が出てこないのは記憶ではなく<b>一覧を持っていない</b>だけ。1語選んで接続をつければ埋まる。</div>
-<details id="vocd"><summary>性能語の一覧</summary><div class="voc" id="voc"></div></details></div>
+<div class="grade" id="grade"></div>
+<details id="vocd"><summary>性能語の一覧と、文の組み立て</summary><div class="voc" id="voc"></div></details></div>
 
 <div class="bar"><div class="tools">
 <input id="q" type="search" placeholder="語で絞る（全分類を横断）" aria-label="横断検索">
@@ -24,6 +25,7 @@
 <button id="ht" type="button">対象</button>
 <button id="hp" type="button" class="rec">目的</button>
 <button id="hj" type="button">実施内容</button>
+<button id="gn" type="button" aria-pressed="true" aria-label="一般論点（般）の表示">般</button>
 </span>
 <span class="sep desk"></span>
 <button id="mk" class="desk" type="button">マーカー</button>
@@ -38,6 +40,7 @@
 <kbd>+</kbd><kbd>-</kbd> 字の大きさ　<kbd>/</kbd> 検索</div></div>
 <div class="tip">まず <b>対象・目的・実施内容</b> のどれかを押すと、その枠が点線の空欄になる。
 そのあと ─ 点線をクリック＝その枠だけ開く／設問名をクリック＝その設問をまとめて開く・閉じる／
+<b>目的</b>の空欄だけは3段階 ─ 1回目タップで<b>性能語だけ</b>、2回目で全文、3回目で空欄に戻る。
 右下の丸ボタン＝<b>タップで全部表示</b>、もう一度タップで戻す（長押しの間だけ表示も可）。
 印刷は<b>いま表示している分類だけ</b>が出る。</div>
 <div id="cats"></div>

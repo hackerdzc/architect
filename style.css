@@ -223,3 +223,54 @@ body.masked #fab{display:block}
 .loaderr code{font-family:"Archivo Narrow",monospace;font-weight:700;background:#fff;
  border:1px solid var(--line);padding:1px 5px;white-space:nowrap}
 .loaderr-d{display:block;margin-top:7px;font-size:calc(11.5px*var(--s));color:var(--faint)}
+
+/* 既＝既存部との配慮（今年の新ヒント対応） */
+.src.kizon{font-family:inherit;color:#9A5B2E;border:1px solid #E3C6AC;padding:0 4px}
+.q-f.kizon{font-family:inherit;font-size:calc(12px*var(--s));font-weight:700;color:#9A5B2E}
+
+/* 般フィルタ */
+body.no-gen .r.gen{display:none}
+.r.lastvis{border-bottom:none}
+#gn{margin-left:10px;border-color:var(--line);color:var(--faint)}
+#gn.on{background:#fff;border-color:var(--t-common);color:var(--t-common)}
+#gn:not(.on){background:#EEF1F4;color:var(--faint);text-decoration:line-through}
+
+@media (max-width:860px){
+ .slots{grid-template-columns:repeat(4,1fr)}
+ #gn{margin-left:0;width:100%;height:44px;padding:0;font-size:calc(14.5px*var(--s))}
+}
+@media print{
+ .src.kizon{padding:0 2pt}
+ body.no-gen .r.gen{display:none}
+}
+
+/* 目的の2段階ヒント：空欄 → 性能語 → 全文 */
+body.h-p .sen .p.hint{font-size:0;border-bottom-color:transparent;background:none}
+body.h-p .sen .p.hint::after{content:attr(data-perf);
+ font-size:calc(15px*var(--s));font-weight:700;letter-spacing:.02em;
+ color:var(--t-common);background:var(--mk-b);padding:2px 9px 3px;white-space:nowrap}
+
+/* 性能語一覧：語ごとの該当行数 */
+.vw{display:inline-block;margin:0 2px 3px 0;padding:1px 3px}
+.vw+.vw::before{content:"／";color:var(--hair);margin-right:5px}
+.vw i{font-family:"Archivo Narrow",sans-serif;font-style:normal;font-weight:700;
+ font-size:calc(11px*var(--s));color:var(--faint);margin-left:4px;vertical-align:1px}
+.vw.zero{color:var(--faint)}
+.vt-kizon{background:#9A5B2E}.vt-other{background:#8A93A0}
+.conn-j{background:var(--mk-p)}
+.note-rev{margin-top:9px;font-size:calc(13px*var(--s));color:var(--mute);line-height:1.7}
+.note-rev b{color:var(--ink)}
+.grade{margin-top:10px;padding-top:9px;border-top:1px solid #DCE1E7;
+ font-size:calc(13px*var(--s));color:var(--mute);line-height:1.75}
+.grade b{color:var(--red)}
+
+@media (max-width:860px){
+ body.h-p .sen .p.hint::after{font-size:calc(14.5px*var(--s));padding:2px 8px 3px}
+}
+@media print{
+ /* 印刷ではヒントを出さない（空欄のまま） */
+ body.h-p .sen .p.hint{font-size:inherit}
+ body.h-p .sen .p.hint::after{content:none}
+ .vw i,.note-rev,.grade{display:none}
+ .conn-j{margin-top:3pt}
+}

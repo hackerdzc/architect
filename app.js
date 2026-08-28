@@ -3,24 +3,51 @@
    questions.json を読み込んで本文を組み立てる。
    本文中の #…# は赤い数字（.v）になる。<b>…</b> はそのまま太字。 */
 function v(s){return s.replace(/#([^#]+)#/g,'<span class="v">$1</span>');}
-function fcls(f){return f==='般'?' gen':f==='1'?' lo':'';}
-var SRC={T:['src','T'],S:['src','S'],TS:['src both','T·S'],gen:['src gen','般']};
+function fcls(f){return f==='般'?' gen':f==='既'?' kizon':f==='1'?' lo':'';}
+var SRC={T:['src','T'],S:['src','S'],TS:['src both','T·S'],
+         gen:['src gen','般'],kizon:['src kizon','既']};
 
 function rowHTML(r){
  var s=SRC[r.src]||SRC.T;
- return '<div class="r"><div class="kir">'+r.kir+'</div><div class="sen">'+
-  '<span class="t">'+v(r.t)+'</span><span class="p">'+v(r.p)+'</span>'+
+ return '<div class="r'+(r.src==='gen'?' gen':'')+'"><div class="kir">'+r.kir+'</div><div class="sen">'+
+  '<span class="t">'+v(r.t)+'</span>'+
+  '<span class="p"'+(r.perf?' data-perf="'+r.perf+'"':'')+'>'+v(r.p)+'</span>'+
   '<span class="j">'+v(r.j)+'</span>'+
   '<span class="'+s[0]+'">'+s[1]+'</span></div></div>';
 }
 function qHTML(q){
- return '<div class="q"><div class="q-hd"><span class="q-nm">'+q.nm+'</span>'+
+ var allgen=q.rows.length&&q.rows.every(function(r){return r.src==='gen';});
+ return '<div class="q"'+(allgen?' data-allgen="1"':'')+'><div class="q-hd"><span class="q-nm">'+q.nm+'</span>'+
   '<span class="q-f'+fcls(q.f)+'">'+q.f+'</span></div>'+
   q.rows.map(rowHTML).join('')+'</div>';
 }
-function count(c){return c.questions.reduce(function(n,q){return n+q.rows.length;},0);}
+function count(c,noGen){return c.questions.reduce(function(n,q){
+  return n+q.rows.filter(function(r){return !(noGen&&r.src==='gen');}).length;},0);}
+
+var DATA=null;
+function recount(){
+ if(!DATA)return;
+ var noGen=document.body.classList.contains('no-gen'),total=0;
+ DATA.cats.forEach(function(c){
+  var n=count(c,noGen); total+=n;
+  var el=document.querySelector('.tab[data-cat="'+c.id+'"] .n');
+  if(el)el.textContent=n;
+ });
+ var all=document.querySelector('.tab[data-cat="all"] .n');
+ if(all)all.textContent=total;
+ // 隠れた行を飛ばして、見えている最後の行だけ下線を消す
+ [].forEach.call(document.querySelectorAll('.q'),function(q){
+  var rs=[].slice.call(q.querySelectorAll('.r')),vis=null;
+  rs.forEach(function(r){
+   r.classList.remove('lastvis');
+   if(!(noGen&&r.classList.contains('gen')))vis=r;
+  });
+  if(vis)vis.classList.add('lastvis');
+ });
+}
 
 function render(data){
+ DATA=data;
  var total=0;
  document.getElementById('cats').innerHTML=data.cats.map(function(c){
   total+=count(c);
@@ -36,10 +63,22 @@ function render(data){
   '<button class="tab tab-all" role="tab" data-cat="all" aria-selected="false" '+
   'type="button">すべて<span class="n">'+total+'</span></button>';
 
+ function chips(words){
+  return words.split('／').map(function(w){
+   w=w.trim();
+   return '<span class="vw" data-w="'+w+'">'+w+'<i></i></span>';
+  }).join('');
+ }
  document.getElementById('voc').innerHTML=data.vocab.map(function(w){
   return '<div class="vrow" data-voc="'+w.id+'"><span class="vtag vt-'+w.id+'">'+w.tag+
-   '</span><span class="vwords">'+w.words+'</span></div>';
- }).join('')+'<div class="conn">'+data.conn+'</div>';
+   '</span><span class="vwords">'+chips(w.words)+'</span></div>';
+ }).join('')+
+  '<div class="vrow" data-voc="other" hidden><span class="vtag vt-other">他分類</span>'+
+  '<span class="vwords" id="vother"></span></div>'+
+  '<div class="conn"><b>目的</b>の接続　'+data.conn+'</div>'+
+  '<div class="conn conn-j"><b>実施内容</b>の語尾　'+data.verbs+'</div>'+
+  '<div class="note-rev">'+data.reverse+'</div>';
+ document.getElementById('grade').innerHTML=data.grade;
 }
 
 /* ── 操作 ─────────────────────────────────────────────── */
@@ -59,6 +98,28 @@ render(data);
  var mobile=window.matchMedia('(max-width:860px)');
  vocd.open=!mobile.matches;
  
+ function vocab(c){
+  var noGen=B.classList.contains('no-gen'),n={},shown={};
+  DATA.cats.forEach(function(k){
+   if(c!=='all'&&k.id!==c)return;
+   k.questions.forEach(function(q){q.rows.forEach(function(r){
+    if(noGen&&r.src==='gen')return;
+    if(r.perf)n[r.perf]=(n[r.perf]||0)+1;});});});
+  vrows.forEach(function(v){
+   if(v.dataset.voc==='other')return;
+   v.hidden=!(c==='all'||v.dataset.voc==='common'||v.dataset.voc==='kizon'||v.dataset.voc===c);
+   [].forEach.call(v.querySelectorAll('.vw'),function(w){
+    var k=n[w.dataset.w]||0;
+    w.querySelector('i').textContent=k||'';
+    w.classList.toggle('zero',!k);
+    if(!v.hidden)shown[w.dataset.w]=1;});});
+  var extra=Object.keys(n).filter(function(w){return !shown[w];}).sort();
+  var row=document.querySelector('.vrow[data-voc="other"]');
+  row.hidden=!extra.length;
+  document.getElementById('vother').innerHTML=extra.map(function(w){
+   return '<span class="vw" data-w="'+w+'">'+w+'<i>'+n[w]+'</i></span>';}).join('');
+ }
+
  function setCat(c){
   cur=c;
   ['c-plan','c-str','c-mep','c-eco','all'].forEach(function(k){B.classList.remove(k);});
@@ -67,18 +128,26 @@ render(data);
   root.style.setProperty('--cat', c==='all'?'var(--ink)':'var(--t-'+c+')');
   tabs.forEach(function(t){t.setAttribute('aria-selected',String(t.dataset.cat===c));});
   secs.forEach(function(s){s.hidden=(c!=='all'&&s.dataset.cat!==c);});
-  vrows.forEach(function(v){v.hidden=!(c==='all'||v.dataset.voc==='common'||v.dataset.voc===c);});
+  vocab(c);
   filter();label();
  }
  tabs.forEach(function(t){t.addEventListener('click',function(){
   q.value='';setCat(t.dataset.cat);
   window.scrollTo({top:0,behavior:mobile.matches?'auto':'smooth'});});});
  
+ function qtext(e){
+  var noGen=B.classList.contains('no-gen');
+  return e.querySelector('.q-nm').textContent+
+   [].filter.call(e.querySelectorAll('.r'),function(r){
+    return !(noGen&&r.classList.contains('gen'));}).map(function(r){return r.textContent;}).join('');
+ }
  function filter(){
-  var v=q.value.trim().toLowerCase();
-  qs.forEach(function(e){e.hidden=v&&e.textContent.toLowerCase().indexOf(v)===-1;});
-  if(v)secs.forEach(function(s){
-   s.hidden=![].slice.call(s.querySelectorAll('.q')).some(function(e){return !e.hidden;});});
+  var v=q.value.trim().toLowerCase(),noGen=B.classList.contains('no-gen');
+  qs.forEach(function(e){
+   e.hidden=!!(noGen&&e.dataset.allgen)||!!(v&&qtext(e).toLowerCase().indexOf(v)===-1);});
+  if(v||noGen)secs.forEach(function(s){
+   s.hidden=(s.dataset.cat!==cur&&cur!=='all')||
+    ![].slice.call(s.querySelectorAll('.q')).some(function(e){return !e.hidden;});});
  }
  function masked(){var c=B.classList;return c.contains('h-t')||c.contains('h-p')||c.contains('h-j');}
  function label(){
@@ -90,6 +159,7 @@ render(data);
   p.push(bl.length?'<b>'+bl.join('・')+'</b> を空欄にした練習用':'<b>全文</b>（読む用）');
   if(c.contains('marker'))p.push('マーカーあり');
   if(c.contains('wide'))p.push('書き込み欄あり');
+  if(c.contains('no-gen'))p.push('般をのぞく');
   if(t)p.push('絞り込み：'+t);
   document.getElementById('pm').innerHTML='1級建築士製図試験　記述練習　─　'+p.join('　／　');
   c.toggle('masked',masked());
@@ -103,7 +173,8 @@ render(data);
  
  function slot(id,cls,sel,onOpen){var b=document.getElementById(id);
   function go(){var on=B.classList.toggle(cls);b.classList.toggle('on',on);
-   [].forEach.call(document.querySelectorAll(sel),function(s){s.classList.remove('show');});
+   [].forEach.call(document.querySelectorAll(sel),function(s){
+   s.classList.remove('show');s.classList.remove('hint');});
    if(on&&onOpen)onOpen();label();}
   b.addEventListener('click',go);return go;}
  var gt=slot('ht','h-t','.sen .t');
@@ -113,6 +184,14 @@ render(data);
   function go(){b.classList.toggle('on',B.classList.toggle(cls));label();}
   b.addEventListener('click',go);return go;}
  var gm=tog('mk','marker');tog('wd','wide');
+ (function(){
+  var b=document.getElementById('gn');
+  b.classList.add('on');b.setAttribute('aria-pressed','true');
+  b.addEventListener('click',function(){
+   var show=!B.classList.toggle('no-gen');
+   b.classList.toggle('on',show);b.setAttribute('aria-pressed',String(show));
+   recount();vocab(cur);filter();label();});
+ })();
  document.getElementById('sm').addEventListener('click',function(){setScale(-1);});
  document.getElementById('sp').addEventListener('click',function(){setScale(1);});
  document.getElementById('pr').addEventListener('click',function(){vocd.open=true;label();window.print();});
@@ -150,14 +229,19 @@ render(data);
   var el=ev.target;if(!el||!el.closest)return;
   var s=el.closest('.sen .t,.sen .p,.sen .j');
   if(s){var c=s.classList;
-   if((c.contains('t')&&B.classList.contains('h-t'))||
-      (c.contains('p')&&B.classList.contains('h-p'))||
+   var isP=c.contains('p')&&B.classList.contains('h-p');
+   if(isP&&s.dataset.perf){
+    if(c.contains('show')){c.remove('show');c.remove('hint');}
+    else if(c.contains('hint')){c.remove('hint');c.add('show');}
+    else c.add('hint');
+    return;}
+   if((c.contains('t')&&B.classList.contains('h-t'))||isP||
       (c.contains('j')&&B.classList.contains('h-j'))){c.toggle('show');return;}}
   var h=el.closest('.q-hd');
   if(h&&masked()){
    var sp=[].slice.call(h.parentNode.querySelectorAll('.sen .t,.sen .p,.sen .j'));
    var open=sp.some(function(x){return x.classList.contains('show');});
-   sp.forEach(function(x){x.classList.toggle('show',!open);});}
+   sp.forEach(function(x){x.classList.toggle('show',!open);x.classList.remove('hint');});}
  });
  document.addEventListener('keydown',function(e){
   if(e.target.tagName==='INPUT'){if(e.key==='Escape'){q.value='';filter();label();q.blur();}return;}
@@ -190,6 +274,7 @@ render(data);
   B.classList.remove('barhide');vocd.open=!mobile.matches;});
  window.addEventListener('beforeprint',function(){vocd.open=true;label();});
  setCat('plan');
+ recount();
 }
 
 fetch('questions.json')
