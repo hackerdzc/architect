@@ -232,6 +232,25 @@ render(data);
   fab.addEventListener('mouseleave',function(){if(downT)unpeek();});
  }
  fab.addEventListener('contextmenu',function(ev){ev.preventDefault();});
+
+ // iOS Safari はアドレスバーの開閉・ピンチズーム・キーボード表示で
+ // position:fixed が古い viewport を基準にしてしまう。
+ // 実際に見えている範囲（visualViewport）とのズレを打ち消して右下に留める。
+ var vv=window.visualViewport;
+ if(vv){
+  var fx=0,fy=0;
+  var fabfit=function(){
+   var dx=Math.round(vv.width+vv.offsetLeft-root.clientWidth);
+   var dy=Math.round(vv.height+vv.offsetTop-root.clientHeight);
+   if(dx===fx&&dy===fy)return;
+   fx=dx;fy=dy;
+   fab.style.transform=(dx||dy)?'translate('+dx+'px,'+dy+'px)':'';
+  };
+  vv.addEventListener('resize',fabfit);
+  vv.addEventListener('scroll',fabfit);
+  window.addEventListener('scroll',fabfit,{passive:true});
+  fabfit();
+ }
  fab.addEventListener('keydown',function(e){
   if(e.key===' '||e.key==='Enter'){e.preventDefault();latched=!latched;downT=0;peek(latched);}});
  
