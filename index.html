@@ -1,6 +1,6 @@
 <!DOCTYPE html><html lang="ja"><head><meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1">
-<title>記述 一行一文表</title>
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>1級建築士製図試験　記述練習</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Archivo+Narrow:wght@600;700&family=Zen+Kaku+Gothic+New:wght@400;500;700&display=swap" rel="stylesheet">
@@ -8,73 +8,80 @@
 :root{--s:1;--ink:#16233A;--rule:#9BA6B6;--hair:#DDE2E9;--mute:#78828F;--red:#C8202A;
 --mk-y:#FFF0A0;--mk-b:#CDE7F6;--mk-p:#FBD5E1;
 --t-plan:#2F6F8F;--t-mep:#1F7A5C;--t-str:#8A6A1F;--t-eco:#7A2E6B;--t-common:#4A5566}
-*{box-sizing:border-box;margin:0;padding:0}html{-webkit-text-size-adjust:100%}
-body{background:#F6F7F9;color:var(--ink);
+*{box-sizing:border-box;margin:0;padding:0}
+html{-webkit-text-size-adjust:100%}
+body{background:#EDEFF3;color:var(--ink);
  font-family:"Zen Kaku Gothic New","Hiragino Kaku Gothic ProN","Yu Gothic","Noto Sans SC","Microsoft YaHei",sans-serif;
- font-size:calc(10pt*var(--s));line-height:1.5;padding:14px 14px 70px}
-.sheet{width:190mm;margin:0 auto;background:#fff;padding:10mm}
+ font-size:calc(10pt*var(--s));line-height:1.5;padding:16px 16px 80px}
+.sheet{width:190mm;margin:0 auto;background:#fff;padding:11mm;box-shadow:0 1px 20px rgba(22,35,58,.10)}
 body.a3 .sheet{width:269mm}
-.hd{display:flex;align-items:flex-end;justify-content:space-between;gap:10px;
- border-bottom:1.6px solid var(--ink);padding-bottom:6px;flex-wrap:wrap}
-.hd h1{font-size:calc(17pt*var(--s));line-height:1.1}
-.hd .sb{font-size:calc(8.4pt*var(--s));color:var(--mute);margin-top:4px}
-.hd .rt{text-align:right;font-size:calc(8pt*var(--s));color:var(--mute);line-height:1.6}
-.hd .rt b{color:var(--red)}
-.box{background:#EDF0F4;padding:11px 13px;margin:11px 0 0;font-size:calc(9pt*var(--s));line-height:1.65}
-.box h2{font-size:calc(9.8pt*var(--s));margin-bottom:6px}
-.box .ex{font-size:calc(10.6pt*var(--s));line-height:1.75;margin:3px 0 7px}
-.box .nt{font-size:calc(8.4pt*var(--s));color:var(--mute);line-height:1.65}
+.hd{border-bottom:1.6px solid var(--ink);padding-bottom:7px}
+.hd h1{font-size:calc(17pt*var(--s));line-height:1.15;letter-spacing:.01em}
+.hd .sb{font-size:calc(8.6pt*var(--s));color:var(--mute);margin-top:5px;line-height:1.55}
+.hd .lg{font-size:calc(8pt*var(--s));color:var(--mute);margin-top:4px}
+.hd .lg b{color:var(--red)}
+.box{background:#F3F5F8;border-left:3px solid var(--ink);padding:12px 14px;margin:12px 0 0;
+ font-size:calc(9pt*var(--s));line-height:1.65}
+.box h2{font-size:calc(10pt*var(--s));margin-bottom:6px}
+.box .ex{font-size:calc(10.8pt*var(--s));line-height:1.75;margin:4px 0 8px}
+.box .nt{font-size:calc(8.6pt*var(--s));color:var(--mute);line-height:1.65}
 .box .nt b{color:var(--red)}
-.voc{margin-top:9px;border-top:.8px solid #DCE1E8;padding-top:8px}
-.vrow{display:grid;grid-template-columns:22mm 1fr;gap:9px;align-items:baseline;margin-bottom:4px}
+details{margin-top:9px;border-top:.8px solid #E1E5EB;padding-top:8px}
+summary{font-size:calc(8.8pt*var(--s));font-weight:700;cursor:pointer;list-style:none;
+ display:flex;align-items:center;gap:6px;padding:2px 0}
+summary::-webkit-details-marker{display:none}
+summary::before{content:"＋";font-family:"Archivo Narrow",sans-serif;color:var(--red);font-size:calc(11pt*var(--s))}
+details[open] summary::before{content:"−"}
+summary:focus-visible{outline:2px solid var(--ink);outline-offset:2px}
+.voc{padding-top:7px}
+.vrow{display:grid;grid-template-columns:23mm 1fr;gap:9px;align-items:baseline;margin-bottom:5px}
 .vtag{font-size:calc(7.8pt*var(--s));font-weight:700;color:#fff;padding:1px 5px 2px;text-align:center}
 .vt-common{background:var(--t-common)}.vt-plan{background:var(--t-plan)}.vt-mep{background:var(--t-mep)}
 .vt-str{background:var(--t-str)}.vt-eco{background:var(--t-eco)}
 .vwords{font-size:calc(9pt*var(--s));line-height:1.6}
-.conn{margin-top:6px;font-size:calc(9pt*var(--s));background:var(--mk-b);padding:3px 8px;display:inline-block}
-.two{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-top:9px;align-items:start}
-.cnt u{text-decoration:none;border-bottom:1.6px solid var(--red)}
-.cnt .n{font-family:"Archivo Narrow",sans-serif;font-weight:700;color:var(--red);margin-left:5px}
-.cnt span.ex2{display:block;font-size:calc(9pt*var(--s));line-height:1.8}
-/* sticky toolbar */
-.bar{position:sticky;top:0;z-index:50;background:rgba(255,255,255,.96);
- backdrop-filter:blur(6px);border-bottom:1px solid var(--hair);
- margin:12px -10mm 0;padding:7px 10mm}
+.conn{margin-top:7px;font-size:calc(9pt*var(--s));background:var(--mk-b);padding:3px 8px;display:inline-block}
+/* toolbar */
+.bar{position:sticky;top:0;z-index:50;background:rgba(255,255,255,.97);
+ -webkit-backdrop-filter:blur(8px);backdrop-filter:blur(8px);
+ border-bottom:1.4px solid var(--ink);margin:14px -11mm 0;padding:8px 11mm}
 .tools{display:flex;gap:6px;align-items:center;flex-wrap:wrap}
-.tools input{flex:1;min-width:120px;font:inherit;font-size:calc(9pt*var(--s));padding:5px 9px;
+.tools input{flex:1;min-width:120px;font:inherit;font-size:calc(9pt*var(--s));padding:6px 10px;
  border:1px solid var(--hair);background:#fff;color:var(--ink)}
+.tools input:focus-visible{outline:2px solid var(--ink);outline-offset:-1px}
 .lbl{font-size:calc(8pt*var(--s));color:var(--mute)}
-.tools button{font:inherit;font-size:calc(8.6pt*var(--s));font-weight:700;padding:5px 10px;
+.tools button{font:inherit;font-size:calc(8.8pt*var(--s));font-weight:700;padding:6px 11px;
  cursor:pointer;border:1px solid var(--hair);background:#fff;color:var(--mute)}
+.tools button:focus-visible{outline:2px solid var(--ink);outline-offset:2px}
 .tools button.on{background:var(--ink);color:#fff;border-color:var(--ink)}
 .tools button.rec{border-color:var(--red);color:var(--red)}
 .tools button.rec.on{background:var(--red);border-color:var(--red);color:#fff}
-.tools .sep{width:1px;height:18px;background:var(--hair);margin:0 2px}
-.keys{font-size:calc(7.6pt*var(--s));color:var(--mute);margin-top:5px}
+.sep{width:1px;height:18px;background:var(--hair);margin:0 2px}
+.keys{font-size:calc(7.8pt*var(--s));color:var(--mute);margin-top:6px}
 .keys kbd{font-family:"Archivo Narrow",sans-serif;font-weight:700;border:1px solid var(--hair);
  padding:0 4px;margin:0 1px;background:#fff}
-.tip{font-size:calc(8.2pt*var(--s));color:var(--mute);margin:9px 0 4px}
-.cat{margin-top:16px;break-inside:avoid}
-.cat-mk{display:inline-block;font-size:calc(10.6pt*var(--s));font-weight:700;color:#fff;padding:2px 8px 3px;letter-spacing:.08em}
+.tip{font-size:calc(8.4pt*var(--s));color:var(--mute);margin:10px 0 4px;line-height:1.6}
+.tip b{color:var(--red)}
+.cat{margin-top:18px;break-inside:avoid}
+.cat-mk{display:inline-block;font-size:calc(10.8pt*var(--s));font-weight:700;color:#fff;padding:2px 9px 3px;letter-spacing:.08em}
 .cat-hd{border-bottom:1.4px solid var(--ink);padding-bottom:3px}
 .c-plan .cat-mk{background:var(--t-plan)}.c-mep .cat-mk{background:var(--t-mep)}
 .c-str .cat-mk{background:var(--t-str)}.c-eco .cat-mk{background:var(--t-eco)}
-.q{margin-top:10px;break-inside:avoid}
-.q-hd{display:flex;align-items:baseline;gap:7px;padding:2px 0 3px;border-bottom:.9px solid var(--rule);cursor:pointer}
-.q-nm{font-size:calc(10.6pt*var(--s));font-weight:700}
+.q{margin-top:11px;break-inside:avoid}
+.q-hd{display:flex;align-items:baseline;gap:7px;padding:2px 0 4px;border-bottom:.9px solid var(--rule);cursor:pointer}
+.q-nm{font-size:calc(10.8pt*var(--s));font-weight:700}
 .q-nm::before{content:"設問";font-size:calc(7.4pt*var(--s));font-weight:700;color:#fff;background:var(--rule);
  padding:1px 5px 2px;margin-right:7px;vertical-align:2px}
 .q-f{font-family:"Archivo Narrow",sans-serif;font-weight:700;font-size:calc(9pt*var(--s));color:var(--red);margin-left:auto}
 .q-f.lo{color:var(--hair)}
-.r{display:grid;grid-template-columns:minmax(26mm,20%) 1fr;gap:11px;padding:6px 0 6px 8px;
+.r{display:grid;grid-template-columns:minmax(27mm,20%) 1fr;gap:12px;padding:7px 0 7px 9px;
  border-bottom:.6px solid var(--hair);align-items:baseline}
 .r:last-child{border-bottom:none}
 .c-plan .r{border-left:3px solid var(--t-plan)}.c-mep .r{border-left:3px solid var(--t-mep)}
 .c-str .r{border-left:3px solid var(--t-str)}.c-eco .r{border-left:3px solid var(--t-eco)}
 .kir{font-size:calc(9.4pt*var(--s));font-weight:700;line-height:1.4}
-.sen{font-size:calc(9.6pt*var(--s));line-height:1.7}
+.sen{font-size:calc(9.8pt*var(--s));line-height:1.75}
 .t{font-weight:700}.p{color:var(--mute)}
-.v{font-family:"Archivo Narrow",sans-serif;font-weight:700;font-size:calc(10.2pt*var(--s));color:var(--red)}
+.v{font-family:"Archivo Narrow",sans-serif;font-weight:700;font-size:calc(10.4pt*var(--s));color:var(--red)}
 .src{font-family:"Archivo Narrow",sans-serif;font-size:calc(7.4pt*var(--s));font-weight:700;color:#BFC6D0;margin-left:6px;white-space:nowrap}
 .src.both{color:#fff;background:var(--ink);padding:0 3px}
 body.marker .t{background:var(--mk-y)}
@@ -89,92 +96,99 @@ body.h-t .sen .t.show,body.h-p .sen .p.show,body.h-j .sen .j.show{border-bottom:
 .sen .p.show,.sen .p.show *{color:var(--mute)}
 .sen .j.show,.sen .j.show *{color:var(--ink)}
 .sen .t.show .v,.sen .p.show .v,.sen .j.show .v{color:var(--red)}
-/* peek = 一時的に全部表示（最後に置く） */
 body.peek .sen .t,body.peek .sen .t *{color:var(--ink)}
 body.peek .sen .p,body.peek .sen .p *{color:var(--mute)}
 body.peek .sen .j,body.peek .sen .j *{color:var(--ink)}
 body.peek .sen .v{color:var(--red)}
 body.peek .sen .t,body.peek .sen .p,body.peek .sen .j{border-bottom:none}
 .q[hidden]{display:none}
-.printmode{display:none;font-size:calc(8.2pt*var(--s));color:var(--mute);
- border-bottom:.8px solid var(--hair);padding:4px 0 5px;margin-bottom:3px}
+.printmode{display:none;font-size:calc(8.4pt*var(--s));color:var(--mute);
+ border-bottom:.8px solid var(--hair);padding:4px 0 6px;margin-bottom:4px}
 .printmode b{color:var(--ink)}
-body.wide .r{padding:11px 0 11px 8px}
+body.wide .r{padding:12px 0 12px 9px}
 body.wide.h-t .sen .t:not(.show),body.wide.h-p .sen .p:not(.show),
 body.wide.h-j .sen .j:not(.show){display:inline-block;min-width:42mm}
-/* floating peek button */
-#fab{position:fixed;right:16px;bottom:16px;z-index:80;display:none;
- width:52px;height:52px;border-radius:50%;border:none;cursor:pointer;
- background:var(--ink);color:#fff;font:inherit;font-size:14pt;font-weight:700;
- box-shadow:0 3px 14px rgba(22,35,58,.32)}
+#fab{position:fixed;right:18px;bottom:calc(18px + env(safe-area-inset-bottom));z-index:80;display:none;
+ width:56px;height:56px;border-radius:50%;border:none;cursor:pointer;-webkit-user-select:none;user-select:none;
+ background:var(--ink);color:#fff;font:inherit;font-size:15pt;font-weight:700;
+ box-shadow:0 4px 16px rgba(22,35,58,.34);touch-action:manipulation}
 #fab.on{background:var(--red)}
 #fab:focus-visible{outline:3px solid var(--red);outline-offset:3px}
 body.masked #fab{display:block}
 @media print{
  html,body{background:#fff;padding:0;-webkit-print-color-adjust:exact;print-color-adjust:exact}
- .sheet{width:auto;padding:0}
- .bar,.tip,#fab{display:none}
+ .sheet{width:auto;padding:0;box-shadow:none}
+ .bar,.tip,#fab,summary{display:none}
  .printmode{display:block}
- .box{background:#F1F3F6}
+ details{border-top:none;padding-top:0}
+ .box{background:#F3F5F8}
 }
+/* ---------- mobile ---------- */
 @media (max-width:860px){
- body{padding:8px 8px 80px}.sheet{width:100%;padding:14px}
- body.a3 .sheet{width:100%}
- .bar{margin:10px -14px 0;padding:7px 14px}
- .two{grid-template-columns:1fr}.vrow{grid-template-columns:1fr;gap:2px}
- .r{grid-template-columns:1fr;gap:3px}.kir::after{content:" →";color:var(--rule)}
+ body{background:#fff;padding:0 0 96px}
+ .sheet,body.a3 .sheet{width:100%;padding:14px 14px 0;box-shadow:none}
+ .hd{padding-bottom:8px}
+ .box{margin:12px 0 0;padding:12px}
+ .vrow{grid-template-columns:1fr;gap:2px;margin-bottom:7px}
+ .vtag{justify-self:start;padding:1px 7px 2px}
+ .bar{margin:14px -14px 0;padding:9px 14px calc(9px + env(safe-area-inset-bottom,0px))}
+ .tools{display:grid;grid-template-columns:1fr auto auto;gap:7px}
+ .tools input{grid-column:1/2;min-width:0}
+ .m-only{display:contents}
+ .slots{grid-column:1/-1;display:grid;grid-template-columns:repeat(3,1fr);gap:7px}
+ .slots button{width:100%;min-height:44px;font-size:calc(9.4pt*var(--s))}
+ .desk{display:none}
  .keys{display:none}
+ .r{grid-template-columns:1fr;gap:4px;padding:9px 0 9px 9px}
+ .kir{font-size:calc(9pt*var(--s));color:var(--mute)}
+ .kir::after{content:" →";color:var(--rule)}
+ .sen{font-size:calc(10.6pt*var(--s));line-height:1.8}
+ .q-hd{padding:4px 0 5px}
+ #fab{width:60px;height:60px;font-size:16pt}
 }
+@media (prefers-reduced-motion:reduce){*{animation:none!important;transition:none!important}}
 </style></head><body><div class="sheet">
 <div class="printmode" id="pm"></div>
-<div class="hd"><div><h1>記述 一行一文表</h1>
-<div class="sb">切り口で引く → 一文で覚える → 弱い枠だけ隠して試す</div></div>
-<div class="rt">数字は<b>赤</b>　右肩＝出現回数<br>
-<span class="src">T</span>＝TACのみ　<span class="src">S</span>＝総合のみ　<span class="src both">T·S</span>＝両校一致</div></div>
+<div class="hd">
+ <h1>1級建築士製図試験　記述練習</h1>
+ <div class="sb">切り口で引く → 一文で覚える → 弱い枠だけ隠して試す　／　答案例7部・45問から117文</div>
+ <div class="lg">数字は<b>赤</b>　右肩＝出現回数　
+ <span class="src">T</span>＝TACのみ　<span class="src">S</span>＝総合のみ　<span class="src both">T·S</span>＝両校一致</div>
+</div>
 
 <div class="box"><h2>目的は思い出す枠ではなく、選ぶ枠</h2>
 <div class="ex"><span class="t">各客室の窓面は、</span><span class="p">快適性に配慮して、</span><span class="j">広く確保した。</span></div>
 <div class="nt">117文の目的を分解すると、骨格は <b>性能語 ＋ 接続</b> の2つだけ。性能語は35語ほどの閉じた集合なので、
 真ん中が出てこないのは記憶ではなく<b>一覧を持っていない</b>だけ。1語選んで接続をつければ埋まる。</div>
-<div class="voc"><div class="vrow"><span class="vtag vt-common">どの設問でも</span><span class="vwords">安全性／快適性／利用しやすさ／わかりやすさ／維持管理のしやすさ／経済性／省エネルギー</span></div>
+<details id="vocd"><summary>性能語の一覧</summary><div class="voc"><div class="vrow"><span class="vtag vt-common">どの設問でも</span><span class="vwords">安全性／快適性／利用しやすさ／わかりやすさ／維持管理のしやすさ／経済性／省エネルギー</span></div>
 <div class="vrow"><span class="vtag vt-plan">計画</span><span class="vwords">正面性・視認性／開放性／プライバシー／静粛性／セキュリティ／バリアフリー／動線の分離・交錯防止／見通し／重複距離・二方向避難／円滑な移動</span></div>
 <div class="vrow"><span class="vtag vt-mep">設備</span><span class="vwords">漏水防止／圧力損失・搬送エネルギーの低減／熱損失の抑制／個別制御・一括制御／ショートサーキット防止／搬出入・更新のしやすさ／信頼性／外気の取込み</span></div>
 <div class="vrow"><span class="vtag vt-str">構造</span><span class="vwords">耐火性・耐久性・遮音性／平面計画の自由度／地震力の低減／支持力の確保／不同沈下／土圧応力／たわみ・ひび割れの抑制／応力の伝達／落下防止</span></div>
 <div class="vrow"><span class="vtag vt-eco">省エネ</span><span class="vwords">熱負荷の抑制／外皮負荷の低減／日射遮蔽／電気使用量の削減／ライフサイクルCO₂の削減</span></div>
-<div class="conn">〜するため、　〜となるように、　〜に配慮して、　〜できるように、　〜とならないように、　〜に優れているため、</div></div>
-<div class="two">
-<div><h2 style="margin-bottom:3px">書く前に数える</h2>
-<div class="cnt">
-<span class="ex2">アプローチ<u>及び</u>駐車場<u>、</u>車寄せ<u>等</u><span class="n">3</span></span>
-<span class="ex2">客室（開放性<u>、</u>静粛性<u>、</u>セキュリティ<u>、</u>避難<u>等</u>）<span class="n">4</span></span>
-<span class="ex2">構造種別・架構形式・スパン割り<u>及び</u>断面寸法<span class="n">3＋表</span></span></div>
-<div class="nt">設問の<b>及び・・・、・等</b>を丸で囲んで数え、その数だけ文をつくる。</div></div>
-<div><h2 style="margin-bottom:3px">実施内容はこの6語で終える</h2>
-<div class="cnt"><span class="ex2">採用した／設けた／計画した</span>
-<span class="ex2">配置した／な形状とした／確保した</span></div>
-<div class="nt">評価は <b>文章 &gt; 文字</b>。丁寧さより、ズレた答え・説明不足・図面との不整合が重い。</div></div>
-</div></div>
+<div class="conn">〜するため、　〜となるように、　〜に配慮して、　〜できるように、　〜とならないように、　〜に優れているため、</div></div></details></div>
 
 <div class="bar"><div class="tools">
-<input id="q" type="search" placeholder="語で絞る ─ シャフト／基礎／避難" aria-label="絞り込み">
-<span class="lbl">隠す</span>
+<input id="q" type="search" placeholder="語で絞る ─ シャフト／基礎／避難" aria-label="設問を絞り込む">
+<span class="lbl desk">隠す</span>
+<span class="slots">
 <button id="ht" type="button">対象</button>
 <button id="hp" type="button" class="rec">目的</button>
 <button id="hj" type="button">実施内容</button>
-<span class="sep"></span>
-<button id="mk" type="button">マーカー</button>
-<button id="wd" type="button">書き込み欄</button>
-<span class="sep"></span>
-<span class="lbl">字</span>
-<button id="sm" type="button">A−</button><button id="sp" type="button">A＋</button>
-<button id="pg" type="button">A4</button>
-<button id="pr" type="button" style="border-color:var(--ink);color:var(--ink)">印刷</button>
+</span>
+<span class="sep desk"></span>
+<button id="mk" class="desk" type="button">マーカー</button>
+<button id="wd" class="desk" type="button">書き込み欄</button>
+<span class="sep desk"></span>
+<button id="sm" type="button" aria-label="字を小さく">A−</button>
+<button id="sp" type="button" aria-label="字を大きく">A＋</button>
+<button id="pg" class="desk" type="button">A4</button>
+<button id="pr" class="desk" type="button" style="border-color:var(--ink);color:var(--ink)">印刷</button>
 </div>
 <div class="keys"><kbd>1</kbd><kbd>2</kbd><kbd>3</kbd> 対象・目的・実施内容を隠す　
 <kbd>0</kbd> 押している間だけ全表示　<kbd>M</kbd> マーカー　<kbd>+</kbd><kbd>-</kbd> 字の大きさ　
 <kbd>/</kbd> 検索　<kbd>Esc</kbd> 解除</div></div>
 <div class="tip">点線をタップするとその枠だけ開く。設問名をタップでその設問を全部開く。
-右下の丸ボタン＝押している間だけ全部表示。<b style="color:var(--red)">「目的」だけ隠すのがいちばん効く。</b></div>
+右下の丸ボタンは<b>押している間だけ</b>全部表示。<b>「目的」だけ隠すのがいちばん効く。</b></div>
 <section class="cat c-plan"><div class="cat-hd"><span class="cat-mk">計画</span></div>
 <div class="q"><div class="q-hd"><span class="q-nm">利用者アプローチ・車寄せ・駐車場</span><span class="q-f">4</span></div>
 <div class="r"><div class="kir">どの道から入るか</div><div class="sen"><span class="t">利用者の主要なアプローチは、</span><span class="p">正面性及び視認性に配慮して、</span><span class="j">幅員の広い<b>駅側の道路</b>から計画した。</span><span class="src both">T·S</span></div></div>
@@ -359,30 +373,31 @@ body.masked #fab{display:block}
 </div>
 </section>
 </div>
-<button id="fab" type="button" aria-label="答えを表示">答</button>
+<button id="fab" type="button" aria-label="押している間だけ答えを表示">答</button>
 <script>
 (function(){
 var B=document.body,root=document.documentElement;
-var q=document.getElementById('q'),fab=document.getElementById('fab');
+var q=document.getElementById('q'),fab=document.getElementById('fab'),vocd=document.getElementById('vocd');
 var qs=[].slice.call(document.querySelectorAll('.q')),cats=[].slice.call(document.querySelectorAll('.cat'));
 var ps=document.createElement('style');document.head.appendChild(ps);
-var scale=1,a3=false;
-var STEPS=[0.85,1,1.15,1.32,1.5];
+var STEPS=[0.85,1,1.15,1.32,1.5],scale=1,a3=false;
+var mobile=window.matchMedia('(max-width:860px)');
+vocd.open=!mobile.matches;
 
 function paper(){ps.textContent='@page{size:'+(a3?'A3':'A4')+' portrait;margin:'+(a3?'14mm':'10mm')+'}';}
-function masked(){return B.classList.contains('h-t')||B.classList.contains('h-p')||B.classList.contains('h-j');}
+function masked(){var c=B.classList;return c.contains('h-t')||c.contains('h-p')||c.contains('h-j');}
 function label(){
- var b=B.classList,bl=[];
- if(b.contains('h-t'))bl.push('対象');
- if(b.contains('h-p'))bl.push('目的');
- if(b.contains('h-j'))bl.push('実施内容');
+ var c=B.classList,bl=[];
+ if(c.contains('h-t'))bl.push('対象');
+ if(c.contains('h-p'))bl.push('目的');
+ if(c.contains('h-j'))bl.push('実施内容');
  var t=q.value.trim(),p=[];
  p.push(bl.length?'<b>'+bl.join('・')+'</b> を空欄にした練習用':'<b>全文</b>（読む用）');
- if(b.contains('marker'))p.push('マーカーあり');
- if(b.contains('wide'))p.push('書き込み欄あり');
+ if(c.contains('marker'))p.push('マーカーあり');
+ if(c.contains('wide'))p.push('書き込み欄あり');
  if(t)p.push('絞り込み：'+t);
  p.push(a3?'A3':'A4');
- document.getElementById('pm').innerHTML='記述 一行一文表　─　'+p.join('　／　');
+ document.getElementById('pm').innerHTML='1級建築士製図試験　記述練習　─　'+p.join('　／　');
  B.classList.toggle('masked',masked());
 }
 function setScale(d){var i=STEPS.indexOf(scale);i=Math.max(0,Math.min(STEPS.length-1,i+d));
@@ -393,11 +408,14 @@ q.addEventListener('input',function(){var v=q.value.trim().toLowerCase();
  cats.forEach(function(c){c.style.display=[].slice.call(c.querySelectorAll('.q')).some(function(e){return !e.hidden;})?'':'none';});
  label();});
 
-function slot(id,cls,sel){var b=document.getElementById(id);
+function slot(id,cls,sel,onOpen){var b=document.getElementById(id);
  function go(){var on=B.classList.toggle(cls);b.classList.toggle('on',on);
-  [].forEach.call(document.querySelectorAll(sel),function(s){s.classList.remove('show');});label();}
+  [].forEach.call(document.querySelectorAll(sel),function(s){s.classList.remove('show');});
+  if(on&&onOpen)onOpen();label();}
  b.addEventListener('click',go);return go;}
-var gt=slot('ht','h-t','.sen .t'),gp=slot('hp','h-p','.sen .p'),gj=slot('hj','h-j','.sen .j');
+var gt=slot('ht','h-t','.sen .t');
+var gp=slot('hp','h-p','.sen .p',function(){vocd.open=true;});
+var gj=slot('hj','h-j','.sen .j');
 
 function tog(id,cls){var b=document.getElementById(id);
  function go(){b.classList.toggle('on',B.classList.toggle(cls));label();}
@@ -407,16 +425,15 @@ var gm=tog('mk','marker');tog('wd','wide');
 document.getElementById('sm').addEventListener('click',function(){setScale(-1);});
 document.getElementById('sp').addEventListener('click',function(){setScale(1);});
 document.getElementById('pg').addEventListener('click',function(){a3=!a3;
- this.textContent=a3?'A3':'A4';this.classList.toggle('on',a3);
- B.classList.toggle('a3',a3);paper();label();});
-document.getElementById('pr').addEventListener('click',function(){label();window.print();});
+ this.textContent=a3?'A3':'A4';this.classList.toggle('on',a3);B.classList.toggle('a3',a3);paper();label();});
+document.getElementById('pr').addEventListener('click',function(){vocd.open=true;label();window.print();});
 
 function peek(on){B.classList.toggle('peek',on);fab.classList.toggle('on',on);}
-['mousedown','touchstart'].forEach(function(e){fab.addEventListener(e,function(ev){ev.preventDefault();peek(true);});});
+['mousedown','touchstart'].forEach(function(e){fab.addEventListener(e,function(ev){ev.preventDefault();peek(true);},{passive:false});});
 ['mouseup','mouseleave','touchend','touchcancel'].forEach(function(e){fab.addEventListener(e,function(){peek(false);});});
 
 document.addEventListener('click',function(ev){
- var el=ev.target.closest?ev.target:null;if(!el)return;
+ var el=ev.target;if(!el||!el.closest)return;
  var s=el.closest('.sen .t,.sen .p,.sen .j');
  if(s){var c=s.classList;
   if((c.contains('t')&&B.classList.contains('h-t'))||(c.contains('p')&&B.classList.contains('h-p'))||
@@ -440,7 +457,7 @@ document.addEventListener('keydown',function(e){
  else if(k==='Escape'){peek(false);}
 });
 document.addEventListener('keyup',function(e){if(e.key==='0')peek(false);});
-window.addEventListener('beforeprint',label);
+window.addEventListener('beforeprint',function(){vocd.open=true;label();});
 paper();label();
 })();
 </script></body></html>
