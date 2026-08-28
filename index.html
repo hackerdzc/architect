@@ -4,36 +4,40 @@
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Archivo+Narrow:wght@600;700&family=Zen+Kaku+Gothic+New:wght@400;500;700&display=swap" rel="stylesheet">
-<style>
-/* ========== tokens ========== */
-:root{
+<style>:root{
  --s:1;
  --ink:#1B2534; --mute:#79818D; --faint:#9AA2AD; --hair:#E2E6EB; --line:#CBD2DA;
- --red:#C0202C;            /* 数値のみ */
- --ans:#0F6B45;            /* 開いた空欄＝暗記マーカーの緑 */
- --paper:#F5F7F9;
+ --red:#C0202C; --ans:#0F6B45; --paper:#F5F7F9;
  --mk-y:#FFF0A0; --mk-b:#CDE7F6; --mk-p:#FBD5E1;
- --t-plan:#2E5C7E; --t-mep:#1D6070; --t-str:#7A5230; --t-eco:#6B3A5E; --t-common:#4A5261;
+ --t-plan:#2E5C7E; --t-str:#7A5230; --t-mep:#1D6070; --t-eco:#6B3A5E; --t-common:#4A5261;
+ --cat:var(--ink);
 }
 *{box-sizing:border-box;margin:0;padding:0}
 html{-webkit-text-size-adjust:100%}
-
-/* ========== SCREEN ========== */
 body{background:var(--paper);color:var(--ink);
  font-family:"Zen Kaku Gothic New","Hiragino Kaku Gothic ProN","Yu Gothic","Noto Sans SC","Microsoft YaHei",sans-serif;
- font-size:calc(15px*var(--s));line-height:1.6;padding:28px 24px 96px;
- -webkit-font-smoothing:antialiased}
+ font-size:calc(15px*var(--s));line-height:1.6;padding:28px 24px 96px;-webkit-font-smoothing:antialiased}
 .sheet{width:min(900px,100%);margin:0 auto;background:#fff;padding:40px 44px 48px;
  box-shadow:0 1px 3px rgba(27,37,52,.06),0 8px 32px rgba(27,37,52,.07)}
-
 .hd{border-bottom:2px solid var(--ink);padding-bottom:12px}
-.hd h1{font-size:calc(27px*var(--s));line-height:1.2;letter-spacing:.01em;font-weight:700}
+.hd h1{font-size:calc(27px*var(--s));line-height:1.2;font-weight:700}
 .hd .sb{font-size:calc(13.5px*var(--s));color:var(--mute);margin-top:8px;line-height:1.6}
-.hd .lg{font-size:calc(12.5px*var(--s));color:var(--faint);margin-top:6px}
+.hd .lg{font-size:calc(12.5px*var(--s));color:var(--faint);margin-top:6px;line-height:1.8}
 .hd .lg b{color:var(--red)}.hd .lg .g{color:var(--ans);font-weight:700}
 
-.box{background:#F4F6F9;border-left:3px solid var(--ink);padding:18px 20px;margin:20px 0 0;
- font-size:calc(14px*var(--s));line-height:1.7}
+.tabs{display:flex;gap:5px;margin-top:18px;flex-wrap:wrap;align-items:flex-end}
+.tab{font:inherit;font-size:calc(14.5px*var(--s));font-weight:700;letter-spacing:.06em;
+ padding:9px 18px 10px;cursor:pointer;border:1px solid var(--line);border-bottom:none;
+ background:#fff;color:var(--mute);position:relative;top:1px}
+.tab:hover{color:var(--ink)}
+.tab:focus-visible{outline:2px solid var(--ink);outline-offset:2px}
+.tab[aria-selected="true"]{background:var(--tc);color:#fff;border-color:var(--tc);padding-top:12px}
+.tab-plan{--tc:var(--t-plan)}.tab-str{--tc:var(--t-str)}
+.tab-mep{--tc:var(--t-mep)}.tab-eco{--tc:var(--t-eco)}.tab-all{--tc:var(--ink)}
+.tab .n{font-family:"Archivo Narrow",sans-serif;font-size:calc(12px*var(--s));opacity:.6;margin-left:7px}
+
+.box{background:#F4F6F9;border-top:2px solid var(--cat);border-left:3px solid var(--cat);
+ padding:18px 20px;font-size:calc(14px*var(--s));line-height:1.7}
 .box h2{font-size:calc(15.5px*var(--s));margin-bottom:9px}
 .box .ex{font-size:calc(17px*var(--s));line-height:1.8;margin:6px 0 11px}
 .box .nt{font-size:calc(13px*var(--s));color:var(--mute);line-height:1.75}
@@ -46,7 +50,8 @@ summary::before{content:"＋";font-family:"Archivo Narrow",sans-serif;color:var(
 details[open] summary::before{content:"−"}
 summary:focus-visible{outline:2px solid var(--ink);outline-offset:3px}
 .voc{padding-top:11px}
-.vrow{display:grid;grid-template-columns:76px 1fr;gap:13px;align-items:baseline;margin-bottom:8px}
+.vrow{display:grid;grid-template-columns:112px 1fr;gap:13px;align-items:baseline;margin-bottom:8px}
+.vrow[hidden]{display:none}
 .vtag{font-size:calc(11.5px*var(--s));font-weight:700;color:#fff;padding:2px 6px 3px;text-align:center}
 .vt-common{background:var(--t-common)}.vt-plan{background:var(--t-plan)}.vt-mep{background:var(--t-mep)}
 .vt-str{background:var(--t-str)}.vt-eco{background:var(--t-eco)}
@@ -55,7 +60,7 @@ summary:focus-visible{outline:2px solid var(--ink);outline-offset:3px}
 
 .bar{position:sticky;top:0;z-index:50;background:rgba(255,255,255,.97);
  -webkit-backdrop-filter:blur(10px);backdrop-filter:blur(10px);
- border-bottom:2px solid var(--ink);margin:24px -44px 0;padding:12px 44px}
+ border-bottom:2px solid var(--cat);margin:22px -44px 0;padding:12px 44px}
 .tools{display:flex;gap:8px;align-items:center;flex-wrap:wrap}
 .tools input{flex:1;min-width:150px;font:inherit;font-size:calc(13.5px*var(--s));padding:8px 12px;
  border:1px solid var(--line);background:#fff;color:var(--ink)}
@@ -75,23 +80,23 @@ summary:focus-visible{outline:2px solid var(--ink);outline-offset:3px}
 .tip{font-size:calc(13px*var(--s));color:var(--mute);margin:16px 0 6px;line-height:1.7}
 .tip b{color:var(--ans)}
 
-.cat{margin-top:34px}
+.cat[hidden]{display:none}
+.cat{margin-top:26px}
 .cat-hd{border-bottom:2px solid var(--ink);padding-bottom:5px}
+body:not(.all) .cat-hd{display:none}
 .cat-mk{display:inline-block;font-size:calc(16px*var(--s));font-weight:700;color:#fff;
  padding:3px 12px 4px;letter-spacing:.1em}
 .c-plan .cat-mk{background:var(--t-plan)}.c-mep .cat-mk{background:var(--t-mep)}
 .c-str .cat-mk{background:var(--t-str)}.c-eco .cat-mk{background:var(--t-eco)}
 
-.q{margin-top:22px;border-left:3px solid var(--hair);padding-left:16px}
-.c-plan .q{border-left-color:var(--t-plan)}.c-mep .q{border-left-color:var(--t-mep)}
-.c-str .q{border-left-color:var(--t-str)}.c-eco .q{border-left-color:var(--t-eco)}
+.q{margin-top:22px;border-left:3px solid var(--cat);padding-left:16px}
 .q-hd{display:flex;align-items:baseline;gap:9px;padding:2px 0 7px;border-bottom:1px solid var(--line);cursor:pointer}
-.q-nm{font-size:calc(17px*var(--s));font-weight:700;letter-spacing:.01em}
+.q-nm{font-size:calc(17px*var(--s));font-weight:700}
 .q-nm::before{content:"設問";font-size:calc(11px*var(--s));font-weight:700;color:#fff;background:var(--faint);
  padding:2px 6px 3px;margin-right:10px;vertical-align:3px;letter-spacing:.08em}
 .q-f{font-family:"Archivo Narrow",sans-serif;font-weight:700;font-size:calc(14px*var(--s));color:var(--red);margin-left:auto}
 .q-f.lo{color:var(--hair)}
-
+.q-f.gen{font-family:inherit;font-size:calc(12px*var(--s));font-weight:700;color:#6C8F7C}
 .r{display:grid;grid-template-columns:minmax(150px,20%) 1fr;gap:0;padding:13px 0;
  border-bottom:1px solid var(--hair);align-items:stretch}
 .r:last-child{border-bottom:none}
@@ -102,28 +107,28 @@ summary:focus-visible{outline:2px solid var(--ink);outline-offset:3px}
 .src{font-family:"Archivo Narrow",sans-serif;font-size:calc(11px*var(--s));font-weight:700;
  color:#C4CAD3;margin-left:10px;white-space:nowrap}
 .src.both{color:#78818E;background:#ECF0F4;padding:1px 4px}
+.src.gen{font-family:inherit;color:#6C8F7C;border:1px solid #C9DCD2;padding:0 4px}
 
-/* marker = 講義の色塗り実習 */
-body.marker .t{background:var(--mk-y)}
-body.marker .p{background:var(--mk-b)}
-body.marker .j{background:var(--mk-p)}
+body.marker .t{background:var(--mk-y)}body.marker .p{background:var(--mk-b)}body.marker .j{background:var(--mk-p)}
 body.marker .sen .t,body.marker .sen .p,body.marker .sen .j,
 body.marker .sen .t *,body.marker .sen .p *,body.marker .sen .j *{color:var(--ink)}
 body.marker .sen .v{color:var(--red)}
 
-/* masking */
 body.h-t .sen .t,body.h-t .sen .t *,body.h-p .sen .p,body.h-p .sen .p *,
 body.h-j .sen .j,body.h-j .sen .j *{color:transparent}
 body.h-t .sen .t,body.h-p .sen .p,body.h-j .sen .j{
- border-bottom:2px dashed var(--line);cursor:pointer;background:none}
-body.h-t .sen .t.show,body.h-p .sen .p.show,body.h-j .sen .j.show{border-bottom:none}
-.sen .t.show,.sen .t.show *,.sen .p.show,.sen .p.show *,
-.sen .j.show,.sen .j.show *{color:var(--ans)}
+ border-bottom:2px dashed var(--line);cursor:pointer;background:none;transition:background-color .12s ease}
+body.h-t .sen .t:hover,body.h-p .sen .p:hover,body.h-j .sen .j:hover{background:#EBF4EF}
+body.h-t .sen .t.show,body.h-t .sen .t.show *,
+body.h-p .sen .p.show,body.h-p .sen .p.show *,
+body.h-j .sen .j.show,body.h-j .sen .j.show *,
 body.peek.h-t .sen .t,body.peek.h-t .sen .t *,
 body.peek.h-p .sen .p,body.peek.h-p .sen .p *,
 body.peek.h-j .sen .j,body.peek.h-j .sen .j *{color:var(--ans)}
-body.peek .sen .t,body.peek .sen .p,body.peek .sen .j{border-bottom:none}
-.sen .show .v,body.peek .sen .v{color:var(--red)}
+body.h-t .sen .t.show,body.h-p .sen .p.show,body.h-j .sen .j.show,
+body.peek.h-t .sen .t,body.peek.h-p .sen .p,body.peek.h-j .sen .j{border-bottom-color:transparent;background:none}
+body.h-t .sen .t.show .v,body.h-p .sen .p.show .v,body.h-j .sen .j.show .v,
+body.peek.h-t .sen .t .v,body.peek.h-p .sen .p .v,body.peek.h-j .sen .j .v{color:var(--red)}
 .q[hidden]{display:none}
 
 #fab{position:fixed;right:26px;bottom:calc(26px + env(safe-area-inset-bottom));z-index:80;display:none;
@@ -135,15 +140,18 @@ body.peek .sen .t,body.peek .sen .p,body.peek .sen .j{border-bottom:none}
 body.masked #fab{display:block}
 .printmode{display:none}
 
-/* ========== MOBILE ========== */
 @media (max-width:860px){
- body{background:#fff;padding:0 0 100px;font-size:calc(15px*var(--s))}
+ body{background:#fff;padding:0 0 100px}
  .sheet{width:100%;padding:18px 16px 0;box-shadow:none}
- .hd{padding-bottom:10px}
- .hd h1{font-size:calc(21px*var(--s))}
- .hd .sb{font-size:calc(12.5px*var(--s));margin-top:5px}
- .hd .lg{font-size:calc(11.5px*var(--s))}
- .box{margin:16px 0 0;padding:14px 15px;font-size:calc(13.5px*var(--s))}
+ .hd{padding-bottom:10px}.hd h1{font-size:calc(21px*var(--s))}
+ .hd .sb{font-size:calc(12.5px*var(--s));margin-top:5px}.hd .lg{font-size:calc(11.5px*var(--s))}
+ .tabs{margin:14px -16px 0;padding:0 16px;gap:4px;flex-wrap:nowrap;overflow-x:auto;
+  -webkit-overflow-scrolling:touch;scrollbar-width:none}
+ .tabs::-webkit-scrollbar{display:none}
+ .tab{font-size:calc(13.5px*var(--s));padding:8px 13px 9px;white-space:nowrap;flex:0 0 auto}
+ .tab[aria-selected="true"]{padding-top:10px}
+ .tab .n{display:none}
+ .box{padding:14px 15px;font-size:calc(13.5px*var(--s))}
  .box .ex{font-size:calc(15.5px*var(--s))}
  .vrow{grid-template-columns:1fr;gap:3px;margin-bottom:10px}
  .vtag{justify-self:start;padding:2px 8px 3px}
@@ -157,45 +165,41 @@ body.masked #fab{display:block}
  .slots button{width:100%;height:44px;padding:0;font-size:calc(14.5px*var(--s))}
  .desk,.keys{display:none}
  .tip{margin:12px 0 2px;font-size:calc(12.5px*var(--s))}
- .cat{margin-top:26px}
- .q{margin-top:18px;padding-left:12px}
- .q-nm{font-size:calc(16px*var(--s))}
+ .cat{margin-top:20px}
+ .q{margin-top:18px;padding-left:12px}.q-nm{font-size:calc(16px*var(--s))}
  .r{grid-template-columns:1fr;gap:5px;padding:14px 0}
- .kir{font-size:calc(12.5px*var(--s));padding:0}
- .kir::after{content:" →";color:var(--line)}
+ .kir{font-size:calc(12.5px*var(--s));padding:0}.kir::after{content:" →";color:var(--line)}
  .sen{font-size:calc(16px*var(--s));line-height:2;padding-left:0;border-left:none}
  #fab{right:18px;bottom:calc(18px + env(safe-area-inset-bottom));width:62px;height:62px}
 }
-@media (prefers-reduced-motion:reduce){*{animation:none!important;transition:none!important}
- .bar{transform:none!important}}
+@media (prefers-reduced-motion:reduce){*{animation:none!important;transition:none!important}.bar{transform:none!important}}
 
-/* ========== PRINT ========== */
 @media print{
  :root{--ink:#14181F;--mute:#5C6470;--faint:#767E89;--hair:#C8CED6;--line:#AEB6C0}
  html,body{background:#fff;padding:0;font-size:calc(9pt*var(--s));line-height:1.5;
   -webkit-print-color-adjust:exact;print-color-adjust:exact}
- .sheet{width:auto;padding:0;box-shadow:none;background:#fff}
- .bar,.tip,.keys,#fab,summary{display:none}
+ .sheet{width:auto;padding:0;box-shadow:none}
+ .bar,.tip,.keys,#fab,summary,.tabs{display:none}
  .printmode{display:block;font-size:calc(8pt*var(--s));color:var(--mute);
   border-bottom:.8px solid var(--hair);padding:0 0 5pt;margin-bottom:4pt}
  .printmode b{color:var(--ink)}
  .hd{border-bottom-width:1.4pt;padding-bottom:5pt}
  .hd h1{font-size:calc(16pt*var(--s))}
  .hd .sb{font-size:calc(8.2pt*var(--s));margin-top:3pt}
- .hd .lg{font-size:calc(7.8pt*var(--s));margin-top:2pt}
+ .hd .lg{font-size:calc(7.8pt*var(--s));margin-top:2pt;line-height:1.5}
  .box{margin:8pt 0 0;padding:8pt 10pt;font-size:calc(8.4pt*var(--s));line-height:1.6;
-  background:#F2F4F7;border-left-width:2pt}
+  background:#F2F4F7;border-left-width:2pt;border-top-width:1.2pt}
  .box h2{font-size:calc(9.4pt*var(--s));margin-bottom:4pt}
  .box .ex{font-size:calc(10pt*var(--s));line-height:1.65;margin:3pt 0 5pt}
  .box .nt{font-size:calc(8pt*var(--s));line-height:1.55}
  details{margin-top:6pt;padding-top:5pt;border-top-width:.6pt}
  .voc{padding-top:0}
- .vrow{grid-template-columns:20mm 1fr;gap:6pt;margin-bottom:2.5pt}
+ .vrow{grid-template-columns:28mm 1fr;gap:6pt;margin-bottom:2.5pt}
  .vtag{font-size:calc(7pt*var(--s));padding:0 4pt 1pt}
  .vwords{font-size:calc(8.2pt*var(--s));line-height:1.5}
  .conn{margin-top:4pt;font-size:calc(8.2pt*var(--s));padding:1pt 6pt}
- .cat{margin-top:13pt;break-inside:avoid}
- .cat-hd{border-bottom-width:1.2pt;padding-bottom:2pt}
+ .cat{margin-top:12pt}
+ .cat-hd{display:block!important;border-bottom-width:1.2pt;padding-bottom:2pt}
  .cat-mk{font-size:calc(10.4pt*var(--s));padding:1pt 7pt 2pt}
  .q{margin-top:9pt;padding-left:8pt;border-left-width:2pt;break-inside:avoid}
  .q-hd{padding:0 0 3pt;border-bottom-width:.8pt}
@@ -206,37 +210,43 @@ body.masked #fab{display:block}
  .kir{font-size:calc(8.2pt*var(--s));line-height:1.45;padding:0 9pt 0 0}
  .sen{font-size:calc(9.4pt*var(--s));line-height:1.62;padding-left:10pt;border-left-width:.5pt}
  .v{font-size:calc(9.8pt*var(--s))}
- .src{font-size:calc(7pt*var(--s));margin-left:6pt}
- .src.both{padding:0 2pt}
- /* 紙の上では緑を使わない ─ 開いた枠も黒 */
- .sen .t.show,.sen .t.show *,.sen .p.show,.sen .p.show *,.sen .j.show,.sen .j.show *,
- body.peek .sen .t,body.peek .sen .t *,body.peek .sen .p,body.peek .sen .p *,
- body.peek .sen .j,body.peek .sen .j *{color:var(--ink)}
- .sen .show .v,body.peek .sen .v{color:var(--red)}
+ .src{font-size:calc(7pt*var(--s));margin-left:6pt}.src.both,.src.gen{padding:0 2pt}
+ body.h-t .sen .t.show,body.h-t .sen .t.show *,body.h-p .sen .p.show,body.h-p .sen .p.show *,
+ body.h-j .sen .j.show,body.h-j .sen .j.show *,
+ body.peek.h-t .sen .t,body.peek.h-t .sen .t *,body.peek.h-p .sen .p,body.peek.h-p .sen .p *,
+ body.peek.h-j .sen .j,body.peek.h-j .sen .j *{color:var(--ink)}
+ body.h-t .sen .t.show .v,body.h-p .sen .p.show .v,body.h-j .sen .j.show .v{color:var(--red)}
  body.h-t .sen .t,body.h-p .sen .p,body.h-j .sen .j{border-bottom-width:1pt}
  body.wide .r{padding:9pt 0}
  body.wide.h-t .sen .t:not(.show),body.wide.h-p .sen .p:not(.show),
  body.wide.h-j .sen .j:not(.show){display:inline-block;min-width:42mm}
 }
-</style></head><body><div class="sheet">
+</style></head><body class="c-plan"><div class="sheet">
 <div class="printmode" id="pm"></div>
 <div class="hd"><h1>1級建築士製図試験　記述練習</h1>
-<div class="sb">切り口で引く → 一文で覚える → 弱い枠だけ隠して試す　／　答案例7部・45問から117文</div>
-<div class="lg">太字＝キーワード　数字＝<b>赤</b>　開いた空欄＝<span class="g">緑</span>　右肩＝出現回数　<span class="src">T</span>＝TACのみ　<span class="src">S</span>＝総合のみ　<span class="src both">T·S</span>＝両校一致</div></div>
+<div class="sb">分類を選ぶ → 切り口で引く → 一文で覚える → 弱い枠だけ隠して試す</div>
+<div class="lg">太字＝キーワード　数字＝<b>赤</b>　開いた空欄＝<span class="g">緑</span>　<span class="src">T</span>＝TAC　<span class="src">S</span>＝総合　<span class="src both">T·S</span>＝両校一致　<span class="src gen">般</span>＝一般に問われる論点</div></div>
 
+<div class="tabs" role="tablist">
+<button class="tab tab-plan" role="tab" data-cat="plan" aria-selected="false" type="button">計画<span class="n">58</span></button>
+<button class="tab tab-str" role="tab" data-cat="str" aria-selected="false" type="button">構造<span class="n">38</span></button>
+<button class="tab tab-mep" role="tab" data-cat="mep" aria-selected="false" type="button">設備<span class="n">42</span></button>
+<button class="tab tab-eco" role="tab" data-cat="eco" aria-selected="false" type="button">環境負荷低減<span class="n">24</span></button>
+<button class="tab tab-all" role="tab" data-cat="all" aria-selected="false" type="button">すべて<span class="n">162</span></button>
+</div>
 <div class="box"><h2>目的は思い出す枠ではなく、選ぶ枠</h2>
 <div class="ex"><span class="t">各客室の窓面は、</span><span class="p">快適性に配慮して、</span><span class="j">広く確保した。</span></div>
-<div class="nt">117文の目的を分解すると、骨格は <b>性能語 ＋ 接続</b> の2つだけ。性能語は35語ほどの閉じた集合なので、真ん中が出てこないのは記憶ではなく<b>一覧を持っていない</b>だけ。1語選んで接続をつければ埋まる。</div>
+<div class="nt">目的の骨格は <b>性能語 ＋ 接続</b> の2つだけ。性能語は閉じた集合なので、真ん中が出てこないのは記憶ではなく<b>一覧を持っていない</b>だけ。1語選んで接続をつければ埋まる。</div>
 <details id="vocd"><summary>性能語の一覧</summary><div class="voc">
-<div class="vrow"><span class="vtag vt-common">どの設問でも</span><span class="vwords">安全性／快適性／利用しやすさ／わかりやすさ／維持管理のしやすさ／経済性／省エネルギー</span></div>
-<div class="vrow"><span class="vtag vt-plan">計画</span><span class="vwords">正面性・視認性／開放性／プライバシー／静粛性／セキュリティ／バリアフリー／動線の分離・交錯防止／見通し／重複距離・二方向避難／円滑な移動</span></div>
-<div class="vrow"><span class="vtag vt-mep">設備</span><span class="vwords">漏水防止／圧力損失・搬送エネルギーの低減／熱損失の抑制／個別制御・一括制御／ショートサーキット防止／搬出入・更新のしやすさ／信頼性／外気の取込み</span></div>
-<div class="vrow"><span class="vtag vt-str">構造</span><span class="vwords">耐火性・耐久性・遮音性／平面計画の自由度／地震力の低減／支持力の確保／不同沈下／土圧応力／たわみ・ひび割れの抑制／応力の伝達／落下防止</span></div>
-<div class="vrow"><span class="vtag vt-eco">省エネ</span><span class="vwords">熱負荷の抑制／外皮負荷の低減／日射遮蔽／電気使用量の削減／ライフサイクルCO₂の削減</span></div>
+<div class="vrow" data-voc="common"><span class="vtag vt-common">共通</span><span class="vwords">安全性／快適性／利用しやすさ／わかりやすさ／維持管理のしやすさ／経済性／省エネルギー</span></div>
+<div class="vrow" data-voc="plan"><span class="vtag vt-plan">計画</span><span class="vwords">正面性・視認性／開放性／プライバシー／静粛性／セキュリティ／バリアフリー／動線の分離・交錯防止／見通し／重複距離・二方向避難／延焼防止／煙の拡散防止</span></div>
+<div class="vrow" data-voc="str"><span class="vtag vt-str">構造</span><span class="vwords">耐火性・耐久性・遮音性／平面計画の自由度／地震力の低減／支持力の確保／不同沈下／液状化／土圧応力／たわみ・ひび割れ／応力の伝達／偏心率・剛性率／落下防止</span></div>
+<div class="vrow" data-voc="mep"><span class="vtag vt-mep">設備</span><span class="vwords">漏水防止／圧力損失・搬送エネルギーの低減／熱損失の抑制／個別制御・一括制御／ショートサーキット防止／搬出入・更新のしやすさ／信頼性／外気の取込み／臭気の拡散防止</span></div>
+<div class="vrow" data-voc="eco"><span class="vtag vt-eco">環境負荷低減</span><span class="vwords">熱負荷の抑制／外皮負荷の低減／日射遮蔽／自然採光・自然換気／電気使用量の削減／上水使用量の削減／ライフサイクルCO₂の削減／資源循環</span></div>
 <div class="conn">〜するため、　〜となるように、　〜に配慮して、　〜できるように、　〜とならないように、　〜に優れているため、</div></div></details></div>
 
 <div class="bar"><div class="tools">
-<input id="q" type="search" placeholder="語で絞る ─ シャフト／基礎／避難" aria-label="設問を絞り込む">
+<input id="q" type="search" placeholder="語で絞る（全分類を横断）" aria-label="横断検索">
 <span class="lbl desk">隠す</span>
 <span class="slots">
 <button id="ht" type="button">対象</button>
@@ -252,11 +262,12 @@ body.masked #fab{display:block}
 <button id="pr" class="desk" type="button">A4で印刷</button>
 </div>
 <div class="keys"><kbd>1</kbd><kbd>2</kbd><kbd>3</kbd> 対象・目的・実施内容を隠す　
-<kbd>0</kbd> 押している間だけ全表示　<kbd>M</kbd> マーカー　<kbd>+</kbd><kbd>-</kbd> 字の大きさ　
-<kbd>/</kbd> 検索　<kbd>Esc</kbd> 解除</div></div>
-<div class="tip">点線をクリックでその枠だけ開く。<span class="desk">設問名をクリックでその設問を全部開く。</span>
-右下の丸ボタンは<b>押している間だけ</b>全部表示。<span class="desk"><b>「目的」だけ隠すのがいちばん効く。</b></span></div>
-<section class="cat c-plan"><div class="cat-hd"><span class="cat-mk">計画</span></div>
+<kbd>0</kbd> 押している間だけ全表示　<kbd>←</kbd><kbd>→</kbd> 分類の切替　<kbd>M</kbd> マーカー　
+<kbd>+</kbd><kbd>-</kbd> 字の大きさ　<kbd>/</kbd> 検索</div></div>
+<div class="tip">まず <b>対象・目的・実施内容</b> のどれかを押すと、その枠が点線の空欄になる。
+そのあと ─ 点線をクリック＝その枠だけ開く／設問名をクリック＝その設問をまとめて開く・閉じる／
+右下の丸ボタン＝<b>押している間だけ</b>全部表示。印刷は<b>いま表示している分類だけ</b>が出る。</div>
+<section class="cat c-plan" data-cat="plan"><div class="cat-hd"><span class="cat-mk">計画</span></div>
 <div class="q"><div class="q-hd"><span class="q-nm">利用者アプローチ・車寄せ・駐車場</span><span class="q-f">4</span></div>
 <div class="r"><div class="kir">どの道から入るか</div><div class="sen"><span class="t">利用者の主要なアプローチは、</span><span class="p">正面性及び視認性に配慮して、</span><span class="j">幅員の広い<b>駅側の道路</b>から計画した。</span><span class="src both">T·S</span></div></div>
 <div class="r"><div class="kir">車で着いた時</div><div class="sen"><span class="t">車寄せは、</span><span class="p">雨に濡れず乗降できるように、</span><span class="j"><b>ピロティ形式</b>・<b>通り抜け形式</b>とし、車路幅と転回スペースを確保した。</span><span class="src">T</span></div></div>
@@ -332,8 +343,79 @@ body.masked #fab{display:block}
 <div class="r"><div class="kir">何m下がったか</div><div class="sen"><span class="t">新設部の後退距離は、</span><span class="p">緩和を受けるため、</span><span class="j">断面図に寸法を明示した。</span><span class="src">S</span></div></div>
 <div class="r"><div class="kir">適合しているか</div><div class="sen"><span class="t">断面図には、</span><span class="p">適合根拠を示すため、</span><span class="j">みなし道路幅・道路中心線・斜線を<b>数値で図示</b>した。</span><span class="src">S</span></div></div>
 </div>
+<div class="q"><div class="q-hd"><span class="q-nm">防災計画</span><span class="q-f gen">般</span></div>
+<div class="r"><div class="kir">火が燃え広がる</div><div class="sen"><span class="t">各階は、</span><span class="p">延焼を防ぐため、</span><span class="j"><b>面積区画</b>（<span class="v">1,500</span>㎡以内）を設けた。</span><span class="src gen">般</span></div></div>
+<div class="r"><div class="kir">煙が上階へ回る</div><div class="sen"><span class="t">吹抜け及び階段室は、</span><span class="p">竪穴からの煙の拡散を防ぐため、</span><span class="j"><b>竪穴区画</b>とし、防火設備を設けた。</span><span class="src gen">般</span></div></div>
+<div class="r"><div class="kir">高層階から逃げる</div><div class="sen"><span class="t">避難階段は、</span><span class="p">安全に地上まで避難できるよう、</span><span class="j"><b>特別避難階段</b>とし、付室に排煙を設けた。</span><span class="src gen">般</span></div></div>
+<div class="r"><div class="kir">停電した時</div><div class="sen"><span class="t">避難経路は、</span><span class="p">停電時も避難を継続できるよう、</span><span class="j"><b>非常用照明・誘導灯</b>と予備電源を設けた。</span><span class="src gen">般</span></div></div>
+<div class="r"><div class="kir">消防隊が入る</div><div class="sen"><span class="t">消防活動については、</span><span class="p">消火活動を円滑にするため、</span><span class="j"><b>非常用進入口</b>を設け、高さ <span class="v">31</span>m超では非常用EVを計画した。</span><span class="src gen">般</span></div></div>
+</div>
+<div class="q"><div class="q-hd"><span class="q-nm">テラス・中庭などの空間構成</span><span class="q-f gen">般</span></div>
+<div class="r"><div class="kir">内と外がつながる所</div><div class="sen"><span class="t">諸室に面するテラスは、</span><span class="p">内外を一体的に利用できるよう、</span><span class="j">大きな開口部で室と連続させた。</span><span class="src gen">般</span></div></div>
+<div class="r"><div class="kir">敷地の中心</div><div class="sen"><span class="t">中庭は、</span><span class="p">各室に採光と通風を確保するため、</span><span class="j">建物中央に設け、周囲に諸室を配置した。</span><span class="src gen">般</span></div></div>
+</div>
 </section>
-<section class="cat c-mep"><div class="cat-hd"><span class="cat-mk">設備</span></div>
+<section class="cat c-str" data-cat="str"><div class="cat-hd"><span class="cat-mk">構造</span></div>
+<div class="q"><div class="q-hd"><span class="q-nm">構造種別・架構形式</span><span class="q-f">3</span></div>
+<div class="r"><div class="kir">建物に何が求められるか</div><div class="sen"><span class="t">構造種別は、</span><span class="p">耐火性・耐久性・遮音性に優れているため、</span><span class="j"><b>鉄筋コンクリート造</b>とした。</span><span class="src both">T·S</span></div></div>
+<div class="r"><div class="kir">平面が自由に組めるか</div><div class="sen"><span class="t">架構形式は、</span><span class="p">平面計画の自由度が高いため、</span><span class="j"><b>ラーメン架構</b>を採用した。</span><span class="src both">T·S</span></div></div>
+<div class="r"><div class="kir">地震力をどう減らすか</div><div class="sen"><span class="t">客室間の界壁は、</span><span class="p">建物全体の重量を軽くし地震力を低減するため、</span><span class="j"><b>軽量鉄骨下地＋強化石膏ボード張り</b>とした。</span><span class="src">S</span></div></div>
+</div>
+<div class="q"><div class="q-hd"><span class="q-nm">スパン割・主要部材の断面寸法</span><span class="q-f">3</span></div>
+<div class="r"><div class="kir">室の間口はいくつか</div><div class="sen"><span class="t">スパン割りは、</span><span class="p"><b>客室の間口指定</b>も勘案して、</span><span class="j"><span class="v">6〜7</span>m で計画した。</span><span class="src both">T·S</span></div></div>
+<div class="r"><div class="kir">経済的か</div><div class="sen"><span class="t">各部材は、</span><span class="p">経済的な部材寸法となるように、</span><span class="j">均等スパンで揃えて計画した。</span><span class="src both">T·S</span></div></div>
+<div class="r"><div class="kir">各部材はいくつか</div><div class="sen"><span class="t">主要な部材の断面寸法は、</span><span class="p">経済的で施工しやすい寸法とするため、</span><span class="j">柱 <span class="v">800×800</span>／大梁 <span class="v">500×800</span>／小梁 <span class="v">300×600</span>／壁 <span class="v">180〜200</span>／床 <span class="v">200</span> とした。</span><span class="src both">T·S</span></div></div>
+</div>
+<div class="q"><div class="q-hd"><span class="q-nm">基礎構造・支持層</span><span class="q-f">4</span></div>
+<div class="r"><div class="kir">どの層で支えるか</div><div class="sen"><span class="t">支持地盤は、</span><span class="p">建物の重量を安全に支持するため、</span><span class="j"><b>N値30以上の砂礫層</b>と考えた。</span><span class="src both">T·S</span></div></div>
+<div class="r"><div class="kir">どの形式にするか</div><div class="sen"><span class="t">基礎構造は、</span><span class="p">安定性が高く不同沈下に対して安全なため、</span><span class="j"><b>べた基礎</b>を採用した。</span><span class="src both">T·S</span></div></div>
+<div class="r"><div class="kir">どこまで掘るか</div><div class="sen"><span class="t">基礎底面のレベルは、</span><span class="p">支持層に確実に到達できる深さとするため、</span><span class="j">GL−○.○m で計画した（<b>数値は課題の地盤図から読む</b>）。</span><span class="src both">T·S</span></div></div>
+<div class="r"><div class="kir">反力を受ける部材</div><div class="sen"><span class="t">基礎梁の梁せい及び基礎スラブの厚さは、</span><span class="p">地盤反力を安全に支持できるように、</span><span class="j">スラブ厚 <span class="v">500</span> 等で計画した。</span><span class="src">T</span></div></div>
+<div class="r"><div class="kir">既存を撤去した所</div><div class="sen"><span class="t">既存建築物の撤去範囲は、</span><span class="p">支持力を確保するため、</span><span class="j"><b>地盤改良</b>を行った。</span><span class="src">S</span></div></div>
+</div>
+<div class="q"><div class="q-hd"><span class="q-nm">地下1階・ドライエリアの構造</span><span class="q-f">3</span></div>
+<div class="r"><div class="kir">どこまで地下にするか</div><div class="sen"><span class="t">地下１階の範囲は、</span><span class="p">構面内のコンクリート壁で土圧を安全に支持できるように、</span><span class="j"><b>柱のスパンに合わせた位置</b>とした。</span><span class="src">T</span></div></div>
+<div class="r"><div class="kir">横から土圧が来る所</div><div class="sen"><span class="t">土圧を受けるコンクリート壁は、</span><span class="p">深さ４ｍ程度の土圧応力への安全性を考慮して、</span><span class="j">厚さ <span class="v">250</span> で計画した。</span><span class="src both">T·S</span></div></div>
+<div class="r"><div class="kir">片側しか支えがない所</div><div class="sen"><span class="t">ドライエリアの側壁は、</span><span class="p"><b>片持ち形式</b>となり応力が大きくなるため、</span><span class="j">構面内の壁より厚く <span class="v">300〜500</span> とした（<b>大小関係が採点対象</b>）。</span><span class="src both">T·S</span></div></div>
+<div class="r"><div class="kir">片持ちの応力の行き先</div><div class="sen"><span class="t">ドライエリア下部は、</span><span class="p">片持ち壁の応力を安全に伝達できるように、</span><span class="j"><b>べた基礎及び基礎梁</b>を設けた。</span><span class="src">T</span></div></div>
+<div class="r"><div class="kir">柱はどうするか</div><div class="sen"><span class="t">地下１階の柱は、</span><span class="p">上部構造の荷重を地盤に伝達させるため、</span><span class="j">地上階と同様 <span class="v">800×800</span> とした。</span><span class="src">S</span></div></div>
+</div>
+<div class="q"><div class="q-hd"><span class="q-nm">無柱空間・長スパン</span><span class="q-f lo">1</span></div>
+<div class="r"><div class="kir">スパンが飛ぶ所</div><div class="sen"><span class="t"><span class="v">12</span>mスパンとなる屋根の大梁は、</span><span class="p">たわみやひび割れを抑制するため、</span><span class="j"><b>PC梁</b>を採用した。</span><span class="src">T</span></div></div>
+<div class="r"><div class="kir">その梁を支える柱</div><div class="sen"><span class="t">PC梁を支持する柱は、</span><span class="p">長スパンの応力を安全に支持できるように、</span><span class="j"><span class="v">900×900</span> にサイズアップした。</span><span class="src">T</span></div></div>
+<div class="r"><div class="kir">スラブのたわみ</div><div class="sen"><span class="t">小梁は、</span><span class="p">スラブのたわみが過大とならないように、</span><span class="j"><span class="v">12</span>mスパンを <span class="v">4</span> 等分した位置に配置した。</span><span class="src">T</span></div></div>
+</div>
+<div class="q"><div class="q-hd"><span class="q-nm">天井の落下防止（特定天井）</span><span class="q-f lo">1</span></div>
+<div class="r"><div class="kir">揺れて壁に当たる</div><div class="sen"><span class="t">天井を構成する部材と壁との間は、</span><span class="p">地震時に天井が損傷しないように、</span><span class="j">クリアランス <span class="v">60</span>mm を設けた。</span><span class="src">T</span></div></div>
+<div class="r"><div class="kir">吊っている所</div><div class="sen"><span class="t">天井の吊り材は、</span><span class="p">荷重を分散させるため、</span><span class="j"><b>1㎡当たり #1# 本以上</b>となる間隔で配置した。</span><span class="src">T</span></div></div>
+<div class="r"><div class="kir">横に揺れる</div><div class="sen"><span class="t">斜め材（ブレース）は、</span><span class="p">振れ止めとするため、</span><span class="j"><b>V字状</b>にバランスよく組んで配置した。</span><span class="src">T</span></div></div>
+<div class="r"><div class="kir">躯体との取り合い</div><div class="sen"><span class="t">吊り材及び斜め材は、</span><span class="p">天井材の落下防止対策とするため、</span><span class="j">埋込みインサートとボルトで強固に緊結した。</span><span class="src">T</span></div></div>
+</div>
+<div class="q"><div class="q-hd"><span class="q-nm">Exp.J・新旧接続部</span><span class="q-f lo">1</span></div>
+<div class="r"><div class="kir">別々に揺れる</div><div class="sen"><span class="t">新設部と既存部のクリアランスは、</span><span class="p">地震時に相互がぶつからないように、</span><span class="j"><b>高さの #1/50# 以上</b>とした（10,700÷50＝214→<span class="v">300</span>）。</span><span class="src">T</span></div></div>
+<div class="r"><div class="kir">屋根と床の見切り</div><div class="sen"><span class="t">接続部には、</span><span class="p">雨仕舞と歩行に配慮して、</span><span class="j">屋根用・床用の <b>Exp.Jカバー</b> を設けた。</span><span class="src">T</span></div></div>
+<div class="r"><div class="kir">片側だけで支える所</div><div class="sen"><span class="t">接続部の床は、</span><span class="p">変位に追従できるように、</span><span class="j"><b>片持ちスラブ</b>とした。</span><span class="src">T</span></div></div>
+</div>
+<div class="q"><div class="q-hd"><span class="q-nm">目標耐震性能</span><span class="q-f gen">般</span></div>
+<div class="r"><div class="kir">多数の者が利用する施設</div><div class="sen"><span class="t">目標耐震性能は、</span><span class="p">大地震動後も機能を確保するため、</span><span class="j">耐震安全性の分類を<b>Ⅱ類</b>（重要度係数 <span class="v">1.25</span>）とした。</span><span class="src gen">般</span></div></div>
+<div class="r"><div class="kir">特に重要な施設</div><div class="sen"><span class="t">目標耐震性能は、</span><span class="p">補修することなく使用を継続するため、</span><span class="j"><b>Ⅰ類</b>（<span class="v">1.5</span>）とした。</span><span class="src gen">般</span></div></div>
+<div class="r"><div class="kir">一般的な施設</div><div class="sen"><span class="t">目標耐震性能は、</span><span class="p">人命の安全確保を図るため、</span><span class="j"><b>Ⅲ類</b>（<span class="v">1.0</span>）とした。</span><span class="src gen">般</span></div></div>
+</div>
+<div class="q"><div class="q-hd"><span class="q-nm">杭基礎・地盤対策</span><span class="q-f gen">般</span></div>
+<div class="r"><div class="kir">支持層が深い時</div><div class="sen"><span class="t">基礎構造は、</span><span class="p">荷重を確実に支持層へ伝えるため、</span><span class="j"><b>場所打ちコンクリート杭</b>とした。</span><span class="src gen">般</span></div></div>
+<div class="r"><div class="kir">支持層に届かない時</div><div class="sen"><span class="t">杭は、</span><span class="p">周面摩擦力で支持するため、</span><span class="j"><b>摩擦杭</b>とした。</span><span class="src gen">般</span></div></div>
+<div class="r"><div class="kir">砂質地盤で地下水位が高い</div><div class="sen"><span class="t">地盤は、</span><span class="p"><b>液状化</b>を防ぐため、</span><span class="j">地盤改良を行った。</span><span class="src gen">般</span></div></div>
+<div class="r"><div class="kir">敷地内で地盤が違う</div><div class="sen"><span class="t">基礎形式は、</span><span class="p">不同沈下を防ぐため、</span><span class="j">建物全体で統一した。</span><span class="src gen">般</span></div></div>
+</div>
+<div class="q"><div class="q-hd"><span class="q-nm">耐震計画上の配慮</span><span class="q-f gen">般</span></div>
+<div class="r"><div class="kir">平面が偏っている</div><div class="sen"><span class="t">耐震壁は、</span><span class="p"><b>偏心率</b>を小さくするため、</span><span class="j">バランスよく配置した。</span><span class="src gen">般</span></div></div>
+<div class="r"><div class="kir">腰壁で柱が短くなる</div><div class="sen"><span class="t">腰壁と柱の間は、</span><span class="p"><b>短柱のせん断破壊</b>を防ぐため、</span><span class="j"><b>構造スリット</b>を設けた。</span><span class="src gen">般</span></div></div>
+<div class="r"><div class="kir">階で剛性が変わる</div><div class="sen"><span class="t">各階の階高と壁量は、</span><span class="p"><b>剛性率</b>を確保するため、</span><span class="j">極力揃えた。</span><span class="src gen">般</span></div></div>
+<div class="r"><div class="kir">揺れそのものを減らす</div><div class="sen"><span class="t">架構は、</span><span class="p">建物への入力を低減するため、</span><span class="j"><b>基礎免震</b>（積層ゴム＋ダンパー）とした。</span><span class="src gen">般</span></div></div>
+<div class="r"><div class="kir">変形を抑える</div><div class="sen"><span class="t">架構内には、</span><span class="p">地震時の応答を低減するため、</span><span class="j"><b>制振ダンパー</b>を配置した。</span><span class="src gen">般</span></div></div>
+</div>
+</section>
+<section class="cat c-mep" data-cat="mep"><div class="cat-hd"><span class="cat-mk">設備</span></div>
 <div class="q"><div class="q-hd"><span class="q-nm">設備シャフト PS・DS・EPS</span><span class="q-f">4</span></div>
 <div class="r"><div class="kir">水が落ちる所</div><div class="sen"><span class="t">ＰＳは、</span><span class="p">横引き配管を短くし十分な排水勾配を確保して漏水防止に配慮するため、</span><span class="j"><b>水回りに近接</b>して配置した。</span><span class="src both">T·S</span></div></div>
 <div class="r"><div class="kir">空気が上がる所</div><div class="sen"><span class="t">ＤＳは、</span><span class="p">屈曲部を少なくし圧力損失を抑え搬送エネルギーを低減するため、</span><span class="j"><b>空調機械室の直上</b>に立ち上げた。</span><span class="src both">T·S</span></div></div>
@@ -377,50 +459,29 @@ body.masked #fab{display:block}
 <div class="r"><div class="kir">見る時</div><div class="sen"><span class="t">屋上に設けた設備機器の周囲は、</span><span class="p">日常のメンテナンスに配慮して、</span><span class="j"><b>ゆとりあるスペース</b>を確保した。</span><span class="src both">T·S</span></div></div>
 <div class="r"><div class="kir">出す時</div><div class="sen"><span class="t">ドライエリアは、</span><span class="p">機器の更新のしやすさに配慮して、</span><span class="j">道路に面して計画し、扉は<b>有効 #2#m</b> を確保した。</span><span class="src">S</span></div></div>
 </div>
-</section>
-<section class="cat c-str"><div class="cat-hd"><span class="cat-mk">構造</span></div>
-<div class="q"><div class="q-hd"><span class="q-nm">構造種別・架構形式</span><span class="q-f">3</span></div>
-<div class="r"><div class="kir">建物に何が求められるか</div><div class="sen"><span class="t">構造種別は、</span><span class="p">耐火性・耐久性・遮音性に優れているため、</span><span class="j"><b>鉄筋コンクリート造</b>とした。</span><span class="src both">T·S</span></div></div>
-<div class="r"><div class="kir">平面が自由に組めるか</div><div class="sen"><span class="t">架構形式は、</span><span class="p">平面計画の自由度が高いため、</span><span class="j"><b>ラーメン架構</b>を採用した。</span><span class="src both">T·S</span></div></div>
-<div class="r"><div class="kir">地震力をどう減らすか</div><div class="sen"><span class="t">客室間の界壁は、</span><span class="p">建物全体の重量を軽くし地震力を低減するため、</span><span class="j"><b>軽量鉄骨下地＋強化石膏ボード張り</b>とした。</span><span class="src">S</span></div></div>
+<div class="q"><div class="q-hd"><span class="q-nm">換気計画</span><span class="q-f gen">般</span></div>
+<div class="r"><div class="kir">人が密集する室</div><div class="sen"><span class="t">外気導入量は、</span><span class="p">在室者数に応じた量とするため、</span><span class="j"><b>CO₂濃度制御</b>を採用した。</span><span class="src gen">般</span></div></div>
+<div class="r"><div class="kir">捨てる空気の熱</div><div class="sen"><span class="t">排気は、</span><span class="p">熱を回収し外気負荷を減らすため、</span><span class="j"><b>全熱交換器</b>を通した。</span><span class="src gen">般</span></div></div>
+<div class="r"><div class="kir">厨房・便所</div><div class="sen"><span class="t">厨房及び便所は、</span><span class="p">臭気を拡散させないため、</span><span class="j"><b>局所排気</b>とし、室内を負圧に保った。</span><span class="src gen">般</span></div></div>
+<div class="r"><div class="kir">駐車場</div><div class="sen"><span class="t">駐車場は、</span><span class="p">排ガスを速やかに排出するため、</span><span class="j"><b>機械換気</b>（誘引誘導方式）とした。</span><span class="src gen">般</span></div></div>
 </div>
-<div class="q"><div class="q-hd"><span class="q-nm">スパン割・主要部材の断面寸法</span><span class="q-f">3</span></div>
-<div class="r"><div class="kir">室の間口はいくつか</div><div class="sen"><span class="t">スパン割りは、</span><span class="p"><b>客室の間口指定</b>も勘案して、</span><span class="j"><span class="v">6〜7</span>m で計画した。</span><span class="src both">T·S</span></div></div>
-<div class="r"><div class="kir">経済的か</div><div class="sen"><span class="t">各部材は、</span><span class="p">経済的な部材寸法となるように、</span><span class="j">均等スパンで揃えて計画した。</span><span class="src both">T·S</span></div></div>
-<div class="r"><div class="kir">各部材はいくつか</div><div class="sen"><span class="t">主要な部材の断面寸法は、</span><span class="p">経済的で施工しやすい寸法とするため、</span><span class="j">柱 <span class="v">800×800</span>／大梁 <span class="v">500×800</span>／小梁 <span class="v">300×600</span>／壁 <span class="v">180〜200</span>／床 <span class="v">200</span> とした。</span><span class="src both">T·S</span></div></div>
+<div class="q"><div class="q-hd"><span class="q-nm">電気・受変電設備</span><span class="q-f gen">般</span></div>
+<div class="r"><div class="kir">受電する所</div><div class="sen"><span class="t">キュービクルは、</span><span class="p">電力損失と電圧降下を低減するため、</span><span class="j">負荷の中心／屋上に配置した。</span><span class="src gen">般</span></div></div>
+<div class="r"><div class="kir">停電した時</div><div class="sen"><span class="t">防災設備は、</span><span class="p">停電時も稼働できるよう、</span><span class="j"><b>非常用発電機</b>から給電する計画とした。</span><span class="src gen">般</span></div></div>
+<div class="r"><div class="kir">落雷・過電流</div><div class="sen"><span class="t">電気設備は、</span><span class="p">機器を保護するため、</span><span class="j">避雷設備と接地を計画した。</span><span class="src gen">般</span></div></div>
 </div>
-<div class="q"><div class="q-hd"><span class="q-nm">基礎構造・支持層</span><span class="q-f">4</span></div>
-<div class="r"><div class="kir">どの層で支えるか</div><div class="sen"><span class="t">支持地盤は、</span><span class="p">建物の重量を安全に支持するため、</span><span class="j"><b>N値30以上の砂礫層</b>と考えた。</span><span class="src both">T·S</span></div></div>
-<div class="r"><div class="kir">どの形式にするか</div><div class="sen"><span class="t">基礎構造は、</span><span class="p">安定性が高く不同沈下に対して安全なため、</span><span class="j"><b>べた基礎</b>を採用した。</span><span class="src both">T·S</span></div></div>
-<div class="r"><div class="kir">どこまで掘るか</div><div class="sen"><span class="t">基礎底面のレベルは、</span><span class="p">支持層に確実に到達できる深さとするため、</span><span class="j">GL−○.○m で計画した（<b>数値は課題の地盤図から読む</b>）。</span><span class="src both">T·S</span></div></div>
-<div class="r"><div class="kir">反力を受ける部材</div><div class="sen"><span class="t">基礎梁の梁せい及び基礎スラブの厚さは、</span><span class="p">地盤反力を安全に支持できるように、</span><span class="j">スラブ厚 <span class="v">500</span> 等で計画した。</span><span class="src">T</span></div></div>
-<div class="r"><div class="kir">既存を撤去した所</div><div class="sen"><span class="t">既存建築物の撤去範囲は、</span><span class="p">支持力を確保するため、</span><span class="j"><b>地盤改良</b>を行った。</span><span class="src">S</span></div></div>
+<div class="q"><div class="q-hd"><span class="q-nm">搬送動力の制御</span><span class="q-f gen">般</span></div>
+<div class="r"><div class="kir">送風量が変動する</div><div class="sen"><span class="t">空調機は、</span><span class="p">部分負荷時の搬送動力を減らすため、</span><span class="j"><b>VAV</b>（変風量）方式とした。</span><span class="src gen">般</span></div></div>
+<div class="r"><div class="kir">送水量が変動する</div><div class="sen"><span class="t">ポンプは、</span><span class="p">同じく搬送動力を減らすため、</span><span class="j"><b>VWV</b>（変流量）方式とインバータ制御とした。</span><span class="src gen">般</span></div></div>
+<div class="r"><div class="kir">機器そのもの</div><div class="sen"><span class="t">ポンプ・ファンは、</span><span class="p">消費電力を削減するため、</span><span class="j">高効率機器を採用した。</span><span class="src gen">般</span></div></div>
 </div>
-<div class="q"><div class="q-hd"><span class="q-nm">地下1階・ドライエリアの構造</span><span class="q-f">3</span></div>
-<div class="r"><div class="kir">どこまで地下にするか</div><div class="sen"><span class="t">地下１階の範囲は、</span><span class="p">構面内のコンクリート壁で土圧を安全に支持できるように、</span><span class="j"><b>柱のスパンに合わせた位置</b>とした。</span><span class="src">T</span></div></div>
-<div class="r"><div class="kir">横から土圧が来る所</div><div class="sen"><span class="t">土圧を受けるコンクリート壁は、</span><span class="p">深さ４ｍ程度の土圧応力への安全性を考慮して、</span><span class="j">厚さ <span class="v">250</span> で計画した。</span><span class="src both">T·S</span></div></div>
-<div class="r"><div class="kir">片側しか支えがない所</div><div class="sen"><span class="t">ドライエリアの側壁は、</span><span class="p"><b>片持ち形式</b>となり応力が大きくなるため、</span><span class="j">構面内の壁より厚く <span class="v">300〜500</span> とした（<b>大小関係が採点対象</b>）。</span><span class="src both">T·S</span></div></div>
-<div class="r"><div class="kir">片持ちの応力の行き先</div><div class="sen"><span class="t">ドライエリア下部は、</span><span class="p">片持ち壁の応力を安全に伝達できるように、</span><span class="j"><b>べた基礎及び基礎梁</b>を設けた。</span><span class="src">T</span></div></div>
-<div class="r"><div class="kir">柱はどうするか</div><div class="sen"><span class="t">地下１階の柱は、</span><span class="p">上部構造の荷重を地盤に伝達させるため、</span><span class="j">地上階と同様 <span class="v">800×800</span> とした。</span><span class="src">S</span></div></div>
-</div>
-<div class="q"><div class="q-hd"><span class="q-nm">無柱空間・長スパン</span><span class="q-f lo">1</span></div>
-<div class="r"><div class="kir">スパンが飛ぶ所</div><div class="sen"><span class="t"><span class="v">12</span>mスパンとなる屋根の大梁は、</span><span class="p">たわみやひび割れを抑制するため、</span><span class="j"><b>PC梁</b>を採用した。</span><span class="src">T</span></div></div>
-<div class="r"><div class="kir">その梁を支える柱</div><div class="sen"><span class="t">PC梁を支持する柱は、</span><span class="p">長スパンの応力を安全に支持できるように、</span><span class="j"><span class="v">900×900</span> にサイズアップした。</span><span class="src">T</span></div></div>
-<div class="r"><div class="kir">スラブのたわみ</div><div class="sen"><span class="t">小梁は、</span><span class="p">スラブのたわみが過大とならないように、</span><span class="j"><span class="v">12</span>mスパンを <span class="v">4</span> 等分した位置に配置した。</span><span class="src">T</span></div></div>
-</div>
-<div class="q"><div class="q-hd"><span class="q-nm">天井の落下防止（特定天井）</span><span class="q-f lo">1</span></div>
-<div class="r"><div class="kir">揺れて壁に当たる</div><div class="sen"><span class="t">天井を構成する部材と壁との間は、</span><span class="p">地震時に天井が損傷しないように、</span><span class="j">クリアランス <span class="v">60</span>mm を設けた。</span><span class="src">T</span></div></div>
-<div class="r"><div class="kir">吊っている所</div><div class="sen"><span class="t">天井の吊り材は、</span><span class="p">荷重を分散させるため、</span><span class="j"><b>1㎡当たり #1# 本以上</b>となる間隔で配置した。</span><span class="src">T</span></div></div>
-<div class="r"><div class="kir">横に揺れる</div><div class="sen"><span class="t">斜め材（ブレース）は、</span><span class="p">振れ止めとするため、</span><span class="j"><b>V字状</b>にバランスよく組んで配置した。</span><span class="src">T</span></div></div>
-<div class="r"><div class="kir">躯体との取り合い</div><div class="sen"><span class="t">吊り材及び斜め材は、</span><span class="p">天井材の落下防止対策とするため、</span><span class="j">埋込みインサートとボルトで強固に緊結した。</span><span class="src">T</span></div></div>
-</div>
-<div class="q"><div class="q-hd"><span class="q-nm">Exp.J・新旧接続部</span><span class="q-f lo">1</span></div>
-<div class="r"><div class="kir">別々に揺れる</div><div class="sen"><span class="t">新設部と既存部のクリアランスは、</span><span class="p">地震時に相互がぶつからないように、</span><span class="j"><b>高さの #1/50# 以上</b>とした（10,700÷50＝214→<span class="v">300</span>）。</span><span class="src">T</span></div></div>
-<div class="r"><div class="kir">屋根と床の見切り</div><div class="sen"><span class="t">接続部には、</span><span class="p">雨仕舞と歩行に配慮して、</span><span class="j">屋根用・床用の <b>Exp.Jカバー</b> を設けた。</span><span class="src">T</span></div></div>
-<div class="r"><div class="kir">片側だけで支える所</div><div class="sen"><span class="t">接続部の床は、</span><span class="p">変位に追従できるように、</span><span class="j"><b>片持ちスラブ</b>とした。</span><span class="src">T</span></div></div>
+<div class="q"><div class="q-hd"><span class="q-nm">節水・水資源</span><span class="q-f gen">般</span></div>
+<div class="r"><div class="kir">屋根に降る雨</div><div class="sen"><span class="t">雨水は、</span><span class="p">上水使用量を削減するため、</span><span class="j"><b>雨水貯留槽</b>に集め、散水・便所洗浄に利用した。</span><span class="src gen">般</span></div></div>
+<div class="r"><div class="kir">一度使った水</div><div class="sen"><span class="t">排水は、</span><span class="p">再利用するため、</span><span class="j"><b>中水処理設備</b>を設けた。</span><span class="src gen">般</span></div></div>
+<div class="r"><div class="kir">水栓・便器</div><div class="sen"><span class="t">衛生器具は、</span><span class="p">節水のため、</span><span class="j"><b>節水型器具・自動水栓</b>を採用した。</span><span class="src gen">般</span></div></div>
 </div>
 </section>
-<section class="cat c-eco"><div class="cat-hd"><span class="cat-mk">省エネ</span></div>
+<section class="cat c-eco" data-cat="eco"><div class="cat-hd"><span class="cat-mk">環境負荷低減</span></div>
 <div class="q"><div class="q-hd"><span class="q-nm">外皮・熱負荷の抑制</span><span class="q-f">2</span></div>
 <div class="r"><div class="kir">開口部から入る熱</div><div class="sen"><span class="t">開口部は、</span><span class="p">熱負荷を抑制し高気密・高断熱を図るため、</span><span class="j"><b>Low-E複層ガラス＋断熱サッシ</b>を採用した。</span><span class="src both">T·S</span></div></div>
 <div class="r"><div class="kir">壁・屋根から入る熱</div><div class="sen"><span class="t">外壁や屋上面の室内側は、</span><span class="p">外皮負荷の低減を図るため、</span><span class="j"><b>高性能断熱材</b>を施した。</span><span class="src">T</span></div></div>
@@ -437,6 +498,27 @@ body.masked #fab{display:block}
 <div class="r"><div class="kir">外光が入る室</div><div class="sen"><span class="t">外光が入る室は、</span><span class="p">電気使用量を削減するため、</span><span class="j"><b>昼光利用制御システム</b>を採用した。</span><span class="src">T</span></div></div>
 <div class="r"><div class="kir">躯体の材料</div><div class="sen"><span class="t">構造体は、</span><span class="p">ライフサイクルCO₂の削減を図るため、</span><span class="j"><b>低炭素型コンクリート</b>を使用した。</span><span class="src">T</span></div></div>
 <div class="r"><div class="kir">サッシの材料</div><div class="sen"><span class="t">建物の開口部は、</span><span class="p">CO₂の削減を図るため、</span><span class="j"><b>リサイクルアルミサッシ</b>を採用した。</span><span class="src">T</span></div></div>
+<div class="r"><div class="kir">セメント</div><div class="sen"><span class="t">コンクリートは、</span><span class="p">産業副産物を有効利用するため、</span><span class="j"><b>高炉セメント</b>を使用した。</span><span class="src gen">般</span></div></div>
+<div class="r"><div class="kir">内装材</div><div class="sen"><span class="t">内装材は、</span><span class="p">資源循環に配慮して、</span><span class="j">再生材・認証木材を採用した。</span><span class="src gen">般</span></div></div>
+</div>
+<div class="q"><div class="q-hd"><span class="q-nm">日射制御</span><span class="q-f gen">般</span></div>
+<div class="r"><div class="kir">東西面の低い日射</div><div class="sen"><span class="t">東西面の開口部は、</span><span class="p">高度の低い日射を遮るため、</span><span class="j"><b>縦ルーバー</b>を設置した。</span><span class="src gen">般</span></div></div>
+<div class="r"><div class="kir">窓際の光</div><div class="sen"><span class="t">南面の開口部は、</span><span class="p">光を室の奥まで導くため、</span><span class="j"><b>ライトシェルフ</b>を設けた。</span><span class="src gen">般</span></div></div>
+<div class="r"><div class="kir">外皮にたまる熱</div><div class="sen"><span class="t">外皮は、</span><span class="p">日射熱を排出するため、</span><span class="j"><b>ダブルスキン</b>とした。</span><span class="src gen">般</span></div></div>
+</div>
+<div class="q"><div class="q-hd"><span class="q-nm">自然換気・通風</span><span class="q-f gen">般</span></div>
+<div class="r"><div class="kir">風の入口と出口</div><div class="sen"><span class="t">各室は、</span><span class="p">通風経路を確保するため、</span><span class="j">対面する位置に開口部を設けた。</span><span class="src gen">般</span></div></div>
+<div class="r"><div class="kir">温度差を使う</div><div class="sen"><span class="t">吹抜け上部は、</span><span class="p"><b>重力換気</b>を促すため、</span><span class="j">排気窓を設けた。</span><span class="src gen">般</span></div></div>
+<div class="r"><div class="kir">夜間の冷気</div><div class="sen"><span class="t">躯体は、</span><span class="p">冷熱を蓄えるため、</span><span class="j"><b>ナイトパージ</b>を行う計画とした。</span><span class="src gen">般</span></div></div>
+</div>
+<div class="q"><div class="q-hd"><span class="q-nm">地中熱・蓄熱</span><span class="q-f gen">般</span></div>
+<div class="r"><div class="kir">地中の安定した温度</div><div class="sen"><span class="t">導入外気は、</span><span class="p">予冷・予熱するため、</span><span class="j"><b>クールピット</b>を経由させた。</span><span class="src gen">般</span></div></div>
+<div class="r"><div class="kir">地中の熱</div><div class="sen"><span class="t">熱源は、</span><span class="p">熱源機の負荷を減らすため、</span><span class="j"><b>地中熱ヒートポンプ</b>を採用した。</span><span class="src gen">般</span></div></div>
+</div>
+<div class="q"><div class="q-hd"><span class="q-nm">屋根・外構</span><span class="q-f gen">般</span></div>
+<div class="r"><div class="kir">屋根面の熱</div><div class="sen"><span class="t">屋上は、</span><span class="p">熱負荷を低減するため、</span><span class="j"><b>屋上緑化</b>を行った。</span><span class="src gen">般</span></div></div>
+<div class="r"><div class="kir">敷地の舗装</div><div class="sen"><span class="t">外構は、</span><span class="p">地表面温度の上昇を抑えるため、</span><span class="j">保水性舗装と緑化を行った。</span><span class="src gen">般</span></div></div>
+<div class="r"><div class="kir">雨水の流出</div><div class="sen"><span class="t">舗装は、</span><span class="p">雨水の流出を抑制するため、</span><span class="j"><b>透水性舗装</b>とした。</span><span class="src gen">般</span></div></div>
 </div>
 </section>
 </div>
@@ -445,34 +527,59 @@ body.masked #fab{display:block}
 (function(){
 var B=document.body,root=document.documentElement;
 var q=document.getElementById('q'),fab=document.getElementById('fab'),vocd=document.getElementById('vocd');
-var qs=[].slice.call(document.querySelectorAll('.q')),cats=[].slice.call(document.querySelectorAll('.cat'));
+var qs=[].slice.call(document.querySelectorAll('.q'));
+var secs=[].slice.call(document.querySelectorAll('.cat'));
+var tabs=[].slice.call(document.querySelectorAll('.tab'));
+var vrows=[].slice.call(document.querySelectorAll('.vrow'));
 var ps=document.createElement('style');document.head.appendChild(ps);
 ps.textContent='@page{size:A4 portrait;margin:12mm}';
-var STEPS=[0.85,1,1.15,1.32,1.5],scale=1;
+var STEPS=[0.85,1,1.15,1.32,1.5],scale=1,cur='plan';
+var NAME={plan:'計画',str:'構造',mep:'設備',eco:'環境負荷低減',all:'すべて'};
+var ORDER=['plan','str','mep','eco','all'];
 var mobile=window.matchMedia('(max-width:860px)');
 vocd.open=!mobile.matches;
 
+function setCat(c){
+ cur=c;
+ ['c-plan','c-str','c-mep','c-eco','all'].forEach(function(k){B.classList.remove(k);});
+ B.classList.add('c-'+(c==='all'?'plan':c));
+ if(c==='all')B.classList.add('all');
+ root.style.setProperty('--cat', c==='all'?'var(--ink)':'var(--t-'+c+')');
+ tabs.forEach(function(t){t.setAttribute('aria-selected',String(t.dataset.cat===c));});
+ secs.forEach(function(s){s.hidden=(c!=='all'&&s.dataset.cat!==c);});
+ vrows.forEach(function(v){v.hidden=!(c==='all'||v.dataset.voc==='common'||v.dataset.voc===c);});
+ filter();label();
+}
+tabs.forEach(function(t){t.addEventListener('click',function(){
+ q.value='';setCat(t.dataset.cat);
+ window.scrollTo({top:0,behavior:mobile.matches?'auto':'smooth'});});});
+
+function filter(){
+ var v=q.value.trim().toLowerCase();
+ qs.forEach(function(e){e.hidden=v&&e.textContent.toLowerCase().indexOf(v)===-1;});
+ if(v)secs.forEach(function(s){
+  s.hidden=![].slice.call(s.querySelectorAll('.q')).some(function(e){return !e.hidden;});});
+}
 function masked(){var c=B.classList;return c.contains('h-t')||c.contains('h-p')||c.contains('h-j');}
 function label(){
  var c=B.classList,bl=[];
  if(c.contains('h-t'))bl.push('対象');
  if(c.contains('h-p'))bl.push('目的');
  if(c.contains('h-j'))bl.push('実施内容');
- var t=q.value.trim(),p=[];
+ var t=q.value.trim(),p=[NAME[cur]];
  p.push(bl.length?'<b>'+bl.join('・')+'</b> を空欄にした練習用':'<b>全文</b>（読む用）');
  if(c.contains('marker'))p.push('マーカーあり');
  if(c.contains('wide'))p.push('書き込み欄あり');
  if(t)p.push('絞り込み：'+t);
  document.getElementById('pm').innerHTML='1級建築士製図試験　記述練習　─　'+p.join('　／　');
- B.classList.toggle('masked',masked());
+ c.toggle('masked',masked());
 }
 function setScale(d){var i=STEPS.indexOf(scale);i=Math.max(0,Math.min(STEPS.length-1,i+d));
  scale=STEPS[i];root.style.setProperty('--s',scale);}
 
-q.addEventListener('input',function(){var v=q.value.trim().toLowerCase();
- qs.forEach(function(e){e.hidden=v&&e.textContent.toLowerCase().indexOf(v)===-1;});
- cats.forEach(function(c){c.style.display=[].slice.call(c.querySelectorAll('.q')).some(function(e){return !e.hidden;})?'':'none';});
- label();});
+q.addEventListener('input',function(){
+ if(q.value.trim()&&cur!=='all'){setCat('all');q.focus();return;}
+ filter();label();});
 
 function slot(id,cls,sel,onOpen){var b=document.getElementById(id);
  function go(){var on=B.classList.toggle(cls);b.classList.toggle('on',on);
@@ -491,26 +598,34 @@ document.getElementById('sp').addEventListener('click',function(){setScale(1);})
 document.getElementById('pr').addEventListener('click',function(){vocd.open=true;label();window.print();});
 
 function peek(on){B.classList.toggle('peek',on);fab.classList.toggle('on',on);}
-['mousedown','touchstart'].forEach(function(e){fab.addEventListener(e,function(ev){ev.preventDefault();peek(true);},{passive:false});});
-['mouseup','mouseleave','touchend','touchcancel'].forEach(function(e){fab.addEventListener(e,function(){peek(false);});});
+['mousedown','touchstart'].forEach(function(e){
+ fab.addEventListener(e,function(ev){ev.preventDefault();peek(true);},{passive:false});});
+['mouseup','mouseleave','touchend','touchcancel'].forEach(function(e){
+ fab.addEventListener(e,function(){peek(false);});});
 
 document.addEventListener('click',function(ev){
  var el=ev.target;if(!el||!el.closest)return;
  var s=el.closest('.sen .t,.sen .p,.sen .j');
  if(s){var c=s.classList;
-  if((c.contains('t')&&B.classList.contains('h-t'))||(c.contains('p')&&B.classList.contains('h-p'))||
+  if((c.contains('t')&&B.classList.contains('h-t'))||
+     (c.contains('p')&&B.classList.contains('h-p'))||
      (c.contains('j')&&B.classList.contains('h-j'))){c.toggle('show');return;}}
  var h=el.closest('.q-hd');
- if(h){[].forEach.call(h.parentNode.querySelectorAll('.t,.p,.j'),function(x){x.classList.add('show');});}
+ if(h&&masked()){
+  var sp=[].slice.call(h.parentNode.querySelectorAll('.sen .t,.sen .p,.sen .j'));
+  var open=sp.some(function(x){return x.classList.contains('show');});
+  sp.forEach(function(x){x.classList.toggle('show',!open);});}
 });
 document.addEventListener('keydown',function(e){
- if(e.target.tagName==='INPUT'){if(e.key==='Escape'){q.value='';q.dispatchEvent(new Event('input'));q.blur();}return;}
+ if(e.target.tagName==='INPUT'){if(e.key==='Escape'){q.value='';filter();label();q.blur();}return;}
  if(e.metaKey||e.ctrlKey||e.altKey)return;
- var k=e.key;
+ var k=e.key,i=ORDER.indexOf(cur);
  if(k==='1'){gt();e.preventDefault();}
  else if(k==='2'){gp();e.preventDefault();}
  else if(k==='3'){gj();e.preventDefault();}
  else if(k==='0'&&!e.repeat){peek(true);e.preventDefault();}
+ else if(k==='ArrowRight'){setCat(ORDER[(i+1)%ORDER.length]);e.preventDefault();}
+ else if(k==='ArrowLeft'){setCat(ORDER[(i+ORDER.length-1)%ORDER.length]);e.preventDefault();}
  else if(k.toLowerCase()==='m'){gm();}
  else if(k==='+'||k==='='){setScale(1);e.preventDefault();}
  else if(k==='-'){setScale(-1);e.preventDefault();}
@@ -528,8 +643,10 @@ window.addEventListener('scroll',function(){
   lastY=y;tick=false;});
 },{passive:true});
 q.addEventListener('focus',function(){B.classList.remove('barhide');});
-if(mobile.addEventListener)mobile.addEventListener('change',function(){B.classList.remove('barhide');vocd.open=!mobile.matches;});
+if(mobile.addEventListener)mobile.addEventListener('change',function(){
+ B.classList.remove('barhide');vocd.open=!mobile.matches;});
 window.addEventListener('beforeprint',function(){vocd.open=true;label();});
-label();
+setCat('plan');
 })();
+
 </script></body></html>
