@@ -96,7 +96,17 @@ render(data);
  var NAME={plan:'計画',str:'構造',mep:'設備',eco:'環境負荷低減',all:'すべて'};
  var ORDER=['plan','str','mep','eco','all'];
  var mobile=window.matchMedia('(max-width:860px)');
+ // サイドバーが出ない幅では、下スクロール中にツールの行だけたたむ
+ var compact=window.matchMedia('(max-width:1079px)');
  vocd.open=!mobile.matches;
+
+ // 浮かせたツール列は場所を取らないので、そのぶんの余白を rail に持たせる
+ var railEl=document.getElementById('rail'),barEl=railEl.querySelector('.bar');
+ function barh(){railEl.style.setProperty('--barh',
+   compact.matches?barEl.offsetHeight+'px':'0px');}
+ if(window.ResizeObserver)new ResizeObserver(barh).observe(barEl);
+ window.addEventListener('resize',barh);
+ barh();
  
  function vocab(c){
   var noGen=B.classList.contains('no-gen'),n={},shown={};
@@ -262,7 +272,7 @@ render(data);
  document.addEventListener('keyup',function(e){if(e.key==='0')unpeek();});
  var lastY=0,tick=false;
  window.addEventListener('scroll',function(){
-  if(!mobile.matches){B.classList.remove('barhide');lastY=window.scrollY||0;return;}
+  if(!compact.matches){B.classList.remove('barhide');lastY=window.scrollY||0;return;}
   if(tick)return;tick=true;
   requestAnimationFrame(function(){var y=window.scrollY||0;
    if(y>150&&y>lastY+8)B.classList.add('barhide');
@@ -270,8 +280,11 @@ render(data);
    lastY=y;tick=false;});
  },{passive:true});
  q.addEventListener('focus',function(){B.classList.remove('barhide');});
- if(mobile.addEventListener)mobile.addEventListener('change',function(){
-  B.classList.remove('barhide');vocd.open=!mobile.matches;});
+ if(mobile.addEventListener){
+  mobile.addEventListener('change',function(){
+   B.classList.remove('barhide');vocd.open=!mobile.matches;});
+  compact.addEventListener('change',function(){B.classList.remove('barhide');barh();});
+ }
  window.addEventListener('beforeprint',function(){vocd.open=true;label();});
  setCat('plan');
  recount();

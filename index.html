@@ -11,13 +11,8 @@
 <div class="sb">分類を選ぶ → 切り口で引く → 一文で覚える → 弱い枠だけ隠して試す</div>
 <div class="lg">太字＝キーワード　数字＝<b>赤</b>　開いた空欄＝<span class="g">緑</span>　<span class="src">T</span>＝TAC　<span class="src">S</span>＝総合　<span class="src both">T·S</span>＝両校一致　<span class="src gen">般</span>＝一般に問われる論点　<span class="src kizon">既</span>＝既存部との配慮</div></div>
 
+<nav class="rail" id="rail" aria-label="分類とツール">
 <div class="tabs" role="tablist" id="tabs"></div>
-<div class="box"><h2>目的は思い出す枠ではなく、選ぶ枠</h2>
-<div class="ex"><span class="t">各客室の窓面は、</span><span class="p">快適性に配慮して、</span><span class="j">広く確保した。</span></div>
-<div class="nt">目的の骨格は <b>性能語 ＋ 接続</b> の2つだけ。性能語は閉じた集合なので、真ん中が出てこないのは記憶ではなく<b>一覧を持っていない</b>だけ。1語選んで接続をつければ埋まる。</div>
-<div class="grade" id="grade"></div>
-<details id="vocd"><summary>性能語の一覧と、文の組み立て</summary><div class="voc" id="voc"></div></details></div>
-
 <div class="bar"><div class="tools">
 <input id="q" type="search" placeholder="語で絞る（全分類を横断）" aria-label="横断検索">
 <span class="lbl desk">隠す</span>
@@ -35,9 +30,19 @@
 <button id="sp" type="button" aria-label="字を大きく">A＋</button>
 <button id="pr" class="desk" type="button">A4で印刷</button>
 </div>
-<div class="keys"><kbd>1</kbd><kbd>2</kbd><kbd>3</kbd> 対象・目的・実施内容を隠す　
-<kbd>0</kbd> 押している間だけ全表示　<kbd>←</kbd><kbd>→</kbd> 分類の切替　<kbd>M</kbd> マーカー　
-<kbd>+</kbd><kbd>-</kbd> 字の大きさ　<kbd>/</kbd> 検索</div></div>
+<div class="keys"><span><kbd>1</kbd><kbd>2</kbd><kbd>3</kbd> 対象・目的・実施内容を隠す</span>
+<span><kbd>0</kbd> 押している間だけ全表示</span>
+<span><kbd>←</kbd><kbd>→</kbd> 分類の切替</span>
+<span><kbd>M</kbd> マーカー</span>
+<span><kbd>+</kbd><kbd>-</kbd> 字の大きさ</span>
+<span><kbd>/</kbd> 検索</span></div></div>
+</nav>
+<div class="box"><h2>目的は思い出す枠ではなく、選ぶ枠</h2>
+<div class="ex"><span class="t">各客室の窓面は、</span><span class="p">快適性に配慮して、</span><span class="j">広く確保した。</span></div>
+<div class="nt">目的の骨格は <b>性能語 ＋ 接続</b> の2つだけ。性能語は閉じた集合なので、真ん中が出てこないのは記憶ではなく<b>一覧を持っていない</b>だけ。1語選んで接続をつければ埋まる。</div>
+<div class="grade" id="grade"></div>
+<details id="vocd"><summary>性能語の一覧と、文の組み立て</summary><div class="voc" id="voc"></div></details></div>
+
 <div class="tip">まず <b>対象・目的・実施内容</b> のどれかを押すと、その枠が点線の空欄になる。
 そのあと ─ 点線をクリック＝その枠だけ開く／設問名をクリック＝その設問をまとめて開く・閉じる／
 <b>目的</b>の空欄だけは3段階 ─ 1回目タップで<b>性能語だけ</b>、2回目で全文、3回目で空欄に戻る。
