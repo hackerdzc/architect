@@ -4,7 +4,7 @@
    本文中の #…# は赤い数字（.v）になる。<b>…</b> はそのまま太字。 */
 function v(s){return s.replace(/#([^#]+)#/g,'<span class="v">$1</span>');}
 function fcls(f){return f==='般'?' gen':f==='既'?' kizon':f==='1'?' lo':'';}
-var SRC={T:['src','T'],S:['src','S'],TS:['src both','T·S'],
+var SRC={T:['src','T'],S:['src','S'],TS:['src both','T·S'],N:['src n','日'],
          gen:['src gen','般'],kizon:['src kizon','既']};
 
 function rowHTML(r){
