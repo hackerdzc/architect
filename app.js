@@ -220,16 +220,14 @@ render(data);
     ![].slice.call(s.querySelectorAll('.q')).some(function(e){return !e.hidden;});});
   if(view==='one'){oneIdx=0;oneShow();}
  }
- function masked(){var c=B.classList;return c.contains('h-t')||c.contains('h-p')||c.contains('h-j');}
+ function masked(){var c=B.classList;return c.contains('h-p')||c.contains('h-j');}
  function label(){
   var c=B.classList,bl=[];
-  if(c.contains('h-t'))bl.push('対象');
   if(c.contains('h-p'))bl.push('目的');
   if(c.contains('h-j'))bl.push('実施内容');
   var t=q.value.trim(),p=[NAME[cur]];
   p.push(bl.length?'<b>'+bl.join('・')+'</b> を空欄にした練習用':'<b>全文</b>（読む用）');
   if(c.contains('marker'))p.push('マーカーあり');
-  if(c.contains('wide'))p.push('書き込み欄あり');
   if(c.contains('no-gen'))p.push('般をのぞく');
   if(t)p.push('絞り込み：'+t);
   document.getElementById('pm').innerHTML='1級建築士製図試験　記述練習　─　'+p.join('　／　');
@@ -248,13 +246,12 @@ render(data);
    [].forEach.call(document.querySelectorAll(sel),function(s){s.classList.remove('show');});
    if(on&&onOpen)onOpen();label();}
   b.addEventListener('click',go);return go;}
- var gt=slot('ht','h-t','.sen .t');
  var gp=slot('hp','h-p','.sen .p');
  var gj=slot('hj','h-j','.sen .j');
  function tog(id,cls){var b=document.getElementById(id);
   function go(){b.classList.toggle('on',B.classList.toggle(cls));label();}
   b.addEventListener('click',go);return go;}
- var gm=tog('mk','marker');tog('wd','wide');
+ var gm=tog('mk','marker');
  (function(){
   var b=document.getElementById('gn');
   b.classList.add('on');b.setAttribute('aria-pressed','true');
@@ -273,15 +270,18 @@ render(data);
  function peek(on){B.classList.toggle('peek',on);pkb.classList.toggle('on',on);
   pkb.setAttribute('aria-pressed',String(on));}
  pkb.addEventListener('click',function(){peek(!B.classList.contains('peek'));});
+ /* 押している間だけの全表示（0キー／左ボタン長押し）。
+    離したら押す前に戻すので、ボタンで固定した全表示を巻き添えにしない。 */
+ var held=null;
+ function hold(on){
+  if(on){if(held===null)held=B.classList.contains('peek');peek(true);}
+  else if(held!==null){peek(held);held=null;}
+ }
 
- /* 本文はどこをタップしても1回で開く（枠ごと。設問名で設問まるごと） */
+ /* 本文はどこをタップしても1回で開く。隠している枠が2つあっても、
+    全表示と同じように文まるごとが一度で出る（設問名で設問まるごと） */
  document.addEventListener('click',function(ev){
   var el=ev.target;if(!el||!el.closest)return;
-  var s=el.closest('.sen .t,.sen .p,.sen .j');
-  if(s){var c=s.classList;
-   if((c.contains('t')&&B.classList.contains('h-t'))||
-      (c.contains('p')&&B.classList.contains('h-p'))||
-      (c.contains('j')&&B.classList.contains('h-j'))){c.toggle('show');return;}}
   var sen=el.closest('.sen');
   if(sen&&masked()){
    var sp=[].slice.call(sen.querySelectorAll('.t,.p,.j'));
@@ -294,14 +294,66 @@ render(data);
    var op=all.some(function(x){return x.classList.contains('show');});
    all.forEach(function(x){x.classList.toggle('show',!op);});}
  });
+ /* マウスのときだけ効く2つ（ホバーで覗く／左ボタン長押しで全表示）。
+    メディアクエリではなく pointerType を見る。環境によって
+    (hover:hover) が false を返すことがあり、そこで取りこぼさないため。 */
+ function isMouse(ev){return !ev.pointerType||ev.pointerType==='mouse';}
+
+ /* 空欄にカーソルを置くと、その文だけ出る（クリック不要）。
+    少しだけ待つのは、通りすがりのカーソルで答が流れないようにするため。 */
+ var HOV=120,hovEl=null,hovT=null;
+ function setHov(s){
+  clearTimeout(hovT);
+  if(s===hovEl)return;
+  if(!s){if(hovEl)hovEl.classList.remove('hov');hovEl=null;return;}
+  hovT=setTimeout(function(){
+   if(hovEl)hovEl.classList.remove('hov');
+   hovEl=s;s.classList.add('hov');},HOV);
+ }
+ document.addEventListener('pointerover',function(ev){
+  if(!isMouse(ev))return;
+  var el=ev.target;if(!el||!el.closest)return setHov(null);
+  var box=el.closest('.sen .p,.sen .j');
+  var c=box&&box.classList;
+  var on=!!box&&((c.contains('p')&&B.classList.contains('h-p'))||
+                 (c.contains('j')&&B.classList.contains('h-j')));
+  setHov(on?box.closest('.sen'):null);
+ });
+ document.addEventListener('pointerout',function(ev){if(!ev.relatedTarget)setHov(null);});
+
+ /* 左ボタンの長押しでも全表示。しきい値を置いてあるので、
+    本文をふつうにクリックして開く操作とはぶつからない。 */
+ var LP=300,lpT=null,lpOn=false,lpSkip=false;
+ document.addEventListener('pointerdown',function(ev){
+  lpSkip=false;
+  if(ev.button!==0||!isMouse(ev)||!masked())return;
+  var el=ev.target;if(!el||!el.closest||!el.closest('.main'))return;
+  clearTimeout(lpT);
+  lpT=setTimeout(function(){lpOn=true;B.classList.add('lp');hold(true);},LP);
+ });
+ function lpEnd(skip){
+  clearTimeout(lpT);
+  if(!lpOn)return;
+  lpOn=false;B.classList.remove('lp');hold(false);
+  /* 直後に来る click だけを捨てる。click が来ない離し方（押した所と
+     違う所で離した等）のときに、次の1クリックを巻き添えにしない */
+  lpSkip=!!skip;
+  if(skip)setTimeout(function(){lpSkip=false;},250);
+ }
+ document.addEventListener('pointerup',function(){lpEnd(true);});
+ document.addEventListener('pointercancel',function(){lpEnd(false);});
+ window.addEventListener('blur',function(){lpEnd(false);setHov(null);});
+ /* 長押しを離したときの click は、本文を開く操作にしない */
+ document.addEventListener('click',function(ev){
+  if(lpSkip){lpSkip=false;ev.stopPropagation();ev.preventDefault();}},true);
+
  document.addEventListener('keydown',function(e){
   if(e.target.tagName==='INPUT'){if(e.key==='Escape'){q.value='';filter();label();q.blur();}return;}
   if(e.metaKey||e.ctrlKey||e.altKey)return;
   var k=e.key,i=ORDER.indexOf(cur);
-  if(k==='1'){gt();e.preventDefault();}
-  else if(k==='2'){gp();e.preventDefault();}
+  if(k==='2'){gp();e.preventDefault();}
   else if(k==='3'){gj();e.preventDefault();}
-  else if(k==='0'&&!e.repeat){peek(true);e.preventDefault();}
+  else if(k==='0'&&!e.repeat){hold(true);e.preventDefault();}
   else if(k==='ArrowRight'){setCat(ORDER[(i+1)%ORDER.length]);e.preventDefault();}
   else if(k==='ArrowLeft'){setCat(ORDER[(i+ORDER.length-1)%ORDER.length]);e.preventDefault();}
   else if(k.toLowerCase()==='v'){setView(VIEWS[(VIEWS.indexOf(view)+1)%VIEWS.length]);}
@@ -310,9 +362,9 @@ render(data);
   else if(k==='+'||k==='='){setScale(1);e.preventDefault();}
   else if(k==='-'){setScale(-1);e.preventDefault();}
   else if(k==='/'){q.focus();e.preventDefault();}
-  else if(k==='Escape'){peek(false);}
+  else if(k==='Escape'){held=null;peek(false);}
  });
- document.addEventListener('keyup',function(e){if(e.key==='0')peek(false);});
+ document.addEventListener('keyup',function(e){if(e.key==='0')hold(false);});
  if(mobile.addEventListener)mobile.addEventListener('change',function(){vocd.open=!mobile.matches;});
  window.addEventListener('beforeprint',function(){vocd.open=true;label();});
 

@@ -50,6 +50,7 @@ a{color:var(--t-plan)}a:hover{color:#16405f}
 .tools input:focus-visible{outline:2px solid var(--ink);outline-offset:-1px}
 .lbl{font-size:calc(9.5px*var(--s));font-weight:700;letter-spacing:.14em;color:#A2AAB4}
 .slots{display:inline-flex;gap:4px}
+.grp{display:inline-flex;gap:4px}
 .tools button{font:inherit;font-size:calc(11.5px*var(--s));font-weight:700;height:24px;padding:0 11px;
  cursor:pointer;border:none;box-shadow:inset 0 0 0 1px var(--line);background:#fff;color:var(--mute)}
 .tools button:hover{box-shadow:inset 0 0 0 1px var(--ink);color:var(--ink)}
@@ -144,33 +145,25 @@ body:not(.h-p) .perf{display:none}
 body.no-gen .r.gen{display:none}
 
 /* 空欄：閉じている間も同じ文字が場所を取るので、開いても行がずれない */
-body.h-t .sen .t,body.h-p .sen .p,body.h-j .sen .j{
+body.h-p .sen .p,body.h-j .sen .j{
  color:transparent;background:var(--ans-off);box-shadow:inset 0 -2px 0 var(--ans);
  padding:2px 1px 3px;cursor:pointer;-webkit-box-decoration-break:clone;box-decoration-break:clone;
  transition:color .08s ease,background-color .12s ease}
-body.h-t .sen .t *,body.h-p .sen .p *,body.h-j .sen .j *{color:transparent}
-body.h-t .sen .t{box-shadow:inset 0 -2px 0 #7E93A6}
-body.h-t .sen .t.show,body.h-t .sen .t.show *,
-body.h-p .sen .p.show,body.h-p .sen .p.show *,
-body.h-j .sen .j.show,body.h-j .sen .j.show *,
-body.peek.h-t .sen .t,body.peek.h-t .sen .t *,
-body.peek.h-p .sen .p,body.peek.h-p .sen .p *,
-body.peek.h-j .sen .j,body.peek.h-j .sen .j *{color:var(--ink)}
-body.h-t .sen .t.show,body.h-p .sen .p.show,body.h-j .sen .j.show,
-body.peek.h-t .sen .t,body.peek.h-p .sen .p,body.peek.h-j .sen .j{background:var(--ans-bg)}
-body.h-p .sen .p.show,body.peek.h-p .sen .p{color:var(--ans)}
-body.h-t .sen .t.show .v,body.h-p .sen .p.show .v,body.h-j .sen .j.show .v,
-body.peek.h-t .sen .t .v,body.peek.h-p .sen .p .v,body.peek.h-j .sen .j .v{color:var(--red)}
+body.h-p .sen .p *,body.h-j .sen .j *{color:transparent}
+/* 開く経路は3つ。クリック（.show）／全表示（.peek）／PCのホバー（.sen.hov）。
+   どれも文まるごとが単位なので、目的と実施内容を同時に隠しても一度で開く。 */
+body.h-p :is(.sen .p.show,.sen.hov .p),body.peek.h-p .sen .p,
+body.h-j :is(.sen .j.show,.sen.hov .j),body.peek.h-j .sen .j{
+ color:var(--ink);background:var(--ans-bg)}
+body.h-p :is(.sen .p.show,.sen.hov .p) *,body.peek.h-p .sen .p *,
+body.h-j :is(.sen .j.show,.sen.hov .j) *,body.peek.h-j .sen .j *{color:var(--ink)}
+body.h-p :is(.sen .p.show,.sen.hov .p),body.peek.h-p .sen .p{color:var(--ans)}
+body.h-p :is(.sen .p.show,.sen.hov .p) .v,body.peek.h-p .sen .p .v,
+body.h-j :is(.sen .j.show,.sen.hov .j) .v,body.peek.h-j .sen .j .v{color:var(--red)}
 body.marker .sen .t{background:var(--mk-y)}
 body.marker .sen .j{background:var(--mk-p)}
-/* PC はカーソルを乗せた瞬間だけ覗ける（クリック不要） */
-@media (hover:hover) and (pointer:fine){
- body.h-t .sen .t:hover,body.h-t .sen .t:hover *,
- body.h-p .sen .p:hover,body.h-p .sen .p:hover *,
- body.h-j .sen .j:hover,body.h-j .sen .j:hover *{color:var(--ink)}
- body.h-t .sen .t:hover,body.h-p .sen .p:hover,body.h-j .sen .j:hover{background:var(--ans-bg)}
- body.h-p .sen .p:hover{color:var(--ans)}
-}
+/* 左ボタン長押しの全表示中。ドラッグで文字が選択されるのを止める */
+body.lp{-webkit-user-select:none;user-select:none}
 
 /* ── カード表示 ───────────────────────────────────────── */
 body.v-card .main{background:#F2F4F6}
@@ -247,8 +240,10 @@ body.v-one .cat-hd{display:none}
  .rail .tools{display:grid;grid-template-columns:1fr 1fr;gap:6px;padding:0}
  .rail .tools input{grid-column:1/-1;width:100%;height:32px;font-size:calc(13px*var(--s))}
  .rail .lbl{grid-column:1/-1;border-top:1px solid var(--hair);padding-top:10px}
- .rail .slots{grid-column:1/-1;display:grid;grid-template-columns:repeat(3,1fr);gap:4px}
+ .rail .slots{grid-column:1/-1;display:grid;grid-template-columns:repeat(2,1fr);gap:4px}
  .rail .slots button{width:100%;padding:0;height:26px}
+ .rail .grp{grid-column:1/-1;display:grid;grid-template-columns:1fr 34px 34px;gap:4px}
+ .rail .grp button{width:100%;padding:0}
  .rail #gn{grid-column:1/-1;margin-left:0}
  .rail .sep{display:none}
  .rail #pk{grid-column:1/-1}
@@ -284,8 +279,10 @@ body.v-one .cat-hd{display:none}
 @media (max-width:520px){
  .tools{gap:5px}
  .tools input{flex:1 1 100%;height:30px;font-size:calc(13px*var(--s))}
- .slots{flex:1 1 100%;display:grid;grid-template-columns:repeat(3,1fr) 44px;gap:4px}
+ .slots{flex:1 1 100%;display:grid;grid-template-columns:repeat(2,1fr) 44px;gap:4px}
  .slots button{width:100%;padding:0;height:26px}
+ .grp{display:grid;grid-template-columns:1fr 40px 40px;gap:4px}
+ .grp button{width:100%;padding:0}
  #gn{margin-left:0}
  #pk{margin-left:0;flex:0 0 auto}
  .sen{font-size:calc(16.5px*var(--s))}
@@ -342,15 +339,11 @@ body.v-one .cat-hd{display:none}
  .sen b{box-shadow:none!important;font-weight:700}
  .src{font-size:calc(7pt*var(--s));margin-left:5pt;position:static!important}
  .src.both,.src.gen,.src.kizon{padding:0 2pt}
- body.h-t .sen .t,body.h-t .sen .t *,body.h-p .sen .p,body.h-p .sen .p *,
+ body.h-p .sen .p,body.h-p .sen .p *,
  body.h-j .sen .j,body.h-j .sen .j *{color:var(--ink)}
- body.h-t .sen .t:not(.show),body.h-p .sen .p:not(.show),body.h-j .sen .j:not(.show){
+ body.h-p .sen .p:not(.show),body.h-j .sen .j:not(.show){
   color:transparent!important;border-bottom:1pt solid var(--line)!important}
- body.h-t .sen .t:not(.show) *,body.h-p .sen .p:not(.show) *,
- body.h-j .sen .j:not(.show) *{color:transparent!important}
- body.wide .r{padding-bottom:9pt!important}
- body.wide.h-t .sen .t:not(.show),body.wide.h-p .sen .p:not(.show),
- body.wide.h-j .sen .j:not(.show){display:inline-block!important;min-width:38mm}
+ body.h-p .sen .p:not(.show) *,body.h-j .sen .j:not(.show) *{color:transparent!important}
  body.no-gen .r.gen{display:none}
  body.v-one .q,body.v-card .r{display:block!important}
 }
