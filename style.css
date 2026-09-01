@@ -162,10 +162,8 @@ body.h-p :is(.sen .p.show,.sen.hov .p) .v,body.peek.h-p .sen .p .v,
 body.h-j :is(.sen .j.show,.sen.hov .j) .v,body.peek.h-j .sen .j .v{color:var(--red)}
 body.marker .sen .t{background:var(--mk-y)}
 body.marker .sen .j{background:var(--mk-p)}
-/* 押している間だけの全表示（0キー／左ボタン）。左右のパネルを引かせて
-   本文だけを前に出す。ドラッグで文字が選択されるのも止める */
-.rail,.side{transition:opacity .12s ease}
-body.hold .rail,body.hold .side{opacity:.38}
+/* 押している間だけの全表示（0キー／左ボタン）。
+   ドラッグで文字が選択されるのを止める */
 body.hold{-webkit-user-select:none;user-select:none}
 body.hold input{-webkit-user-select:text;user-select:text}
 
@@ -264,6 +262,11 @@ body.v-one .cat-hd{display:none}
  body.v-card .r{break-inside:avoid}
  body.v-one .rows{columns:1}
  .onebar{left:var(--rail)}
+ /* 左右のパネルは常に引かせて、本文を前に出しておく。
+    カーソルが入った（キーボードで入った）ときだけ少し濃くする */
+ .rail,.side{opacity:.42;transition:opacity .14s ease}
+ .rail:hover,.rail:focus-within,.rail:active,
+ .side:hover,.side:focus-within{opacity:.9}
 }
 /* 右レールを出せる幅から出す */
 @media (min-width:1500px){
