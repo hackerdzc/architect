@@ -274,6 +274,7 @@ render(data);
     離したら押す前に戻すので、ボタンで固定した全表示を巻き添えにしない。 */
  var held=null;
  function hold(on){
+  B.classList.toggle('hold',on);
   if(on){if(held===null)held=B.classList.contains('peek');peek(true);}
   else if(held!==null){peek(held);held=null;}
  }
@@ -321,31 +322,21 @@ render(data);
  });
  document.addEventListener('pointerout',function(ev){if(!ev.relatedTarget)setHov(null);});
 
- /* 左ボタンの長押しでも全表示。しきい値を置いてあるので、
-    本文をふつうにクリックして開く操作とはぶつからない。 */
- var LP=300,lpT=null,lpOn=false,lpSkip=false;
+ /* 左ボタンを押している間は全表示。待ち時間は置かない（押した瞬間に出す）。
+    画面のどこで押しても効く。離したあとの click はそのまま通すので、
+    本文をクリックして1文だけ開いたままにする操作は今までどおり効く。
+    検索欄だけは、文字を選べるように外してある。 */
+ var lpOn=false;
  document.addEventListener('pointerdown',function(ev){
-  lpSkip=false;
   if(ev.button!==0||!isMouse(ev)||!masked())return;
-  var el=ev.target;if(!el||!el.closest||!el.closest('.main'))return;
-  clearTimeout(lpT);
-  lpT=setTimeout(function(){lpOn=true;B.classList.add('lp');hold(true);},LP);
+  var el=ev.target;
+  if(el&&el.closest&&el.closest('input,textarea,select'))return;
+  lpOn=true;hold(true);
  });
- function lpEnd(skip){
-  clearTimeout(lpT);
-  if(!lpOn)return;
-  lpOn=false;B.classList.remove('lp');hold(false);
-  /* 直後に来る click だけを捨てる。click が来ない離し方（押した所と
-     違う所で離した等）のときに、次の1クリックを巻き添えにしない */
-  lpSkip=!!skip;
-  if(skip)setTimeout(function(){lpSkip=false;},250);
- }
- document.addEventListener('pointerup',function(){lpEnd(true);});
- document.addEventListener('pointercancel',function(){lpEnd(false);});
- window.addEventListener('blur',function(){lpEnd(false);setHov(null);});
- /* 長押しを離したときの click は、本文を開く操作にしない */
- document.addEventListener('click',function(ev){
-  if(lpSkip){lpSkip=false;ev.stopPropagation();ev.preventDefault();}},true);
+ function lpEnd(){if(!lpOn)return;lpOn=false;hold(false);}
+ document.addEventListener('pointerup',lpEnd);
+ document.addEventListener('pointercancel',lpEnd);
+ window.addEventListener('blur',function(){lpEnd();setHov(null);});
 
  document.addEventListener('keydown',function(e){
   if(e.target.tagName==='INPUT'){if(e.key==='Escape'){q.value='';filter();label();q.blur();}return;}

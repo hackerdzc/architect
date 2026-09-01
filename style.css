@@ -162,8 +162,12 @@ body.h-p :is(.sen .p.show,.sen.hov .p) .v,body.peek.h-p .sen .p .v,
 body.h-j :is(.sen .j.show,.sen.hov .j) .v,body.peek.h-j .sen .j .v{color:var(--red)}
 body.marker .sen .t{background:var(--mk-y)}
 body.marker .sen .j{background:var(--mk-p)}
-/* 左ボタン長押しの全表示中。ドラッグで文字が選択されるのを止める */
-body.lp{-webkit-user-select:none;user-select:none}
+/* 押している間だけの全表示（0キー／左ボタン）。左右のパネルを引かせて
+   本文だけを前に出す。ドラッグで文字が選択されるのも止める */
+.rail,.side{transition:opacity .12s ease}
+body.hold .rail,body.hold .side{opacity:.38}
+body.hold{-webkit-user-select:none;user-select:none}
+body.hold input{-webkit-user-select:text;user-select:text}
 
 /* ── カード表示 ───────────────────────────────────────── */
 body.v-card .main{background:#F2F4F6}
