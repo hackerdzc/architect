@@ -28,7 +28,15 @@ function qHTML(q){
 function count(c,noGen){return c.questions.reduce(function(n,q){
   return n+q.rows.filter(function(r){return !(noGen&&r.src==='gen');}).length;},0);}
 
-var DATA=null;
+var DATA=null,UPD='';
+/* 更新日付。令和で出す（令和1年＝2019年） */
+function wareki(v){
+ if(!v)return '';
+ var d=new Date(v);if(isNaN(d))return '';
+ var y=d.getFullYear()-2018,m=d.getMonth()+1,n=d.getDate();
+ if(y<1)return '';
+ return 'R'+y+'.'+(m<10?'0':'')+m+'.'+(n<10?'0':'')+n;
+}
 function recount(){
  if(!DATA)return;
  var noGen=document.body.classList.contains('no-gen'),total=0;
@@ -241,7 +249,10 @@ render(data);
   if(c.contains('marker'))p.push('マーカーあり');
   if(c.contains('no-gen'))p.push('般をのぞく');
   if(t)p.push('絞り込み：'+t);
-  document.getElementById('pm').innerHTML='1級建築士製図試験　記述練習　─　'+p.join('　／　');
+  /* 画面に出すのは表題だけ。分類も、何をどう隠しているかも、紙にだけ添える */
+  document.getElementById('pm').innerHTML='1級建築士製図試験　記述練習'+
+   '<span class="pm-mode">　─　'+p.join('　／　')+'</span>'+
+   (UPD?'<span class="pm-date">'+UPD+'</span>':'');
   c.toggle('masked',masked());
  }
  function setScale(d){var i=STEPS.indexOf(scale);i=Math.max(0,Math.min(STEPS.length-1,i+d));
@@ -379,7 +390,10 @@ render(data);
 }
 
 fetch('questions.json')
- .then(function(r){if(!r.ok)throw new Error('HTTP '+r.status);return r.json();})
+ .then(function(r){
+  if(!r.ok)throw new Error('HTTP '+r.status);
+  var lm=r.headers.get('last-modified');
+  return r.json().then(function(d){UPD=wareki(d.updated||lm);return d;});})
  .then(init)
  .catch(function(e){
   document.getElementById('cats').innerHTML=

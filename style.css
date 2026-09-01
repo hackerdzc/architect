@@ -28,6 +28,12 @@ a{color:var(--t-plan)}a:hover{color:#16405f}
  background:none;border:none;cursor:pointer;white-space:nowrap;padding:0 2px}
 .lgb i{font-family:"Archivo Narrow",sans-serif;font-style:normal;font-size:calc(12px*var(--s));color:var(--ans)}
 
+/* 表題の行。画面では表題と更新日付だけ、分類や練習の状態は紙にだけ出す */
+.printmode{display:flex;align-items:baseline;padding:0 16px}
+.pm-mode{display:none}
+.pm-date{margin-left:auto;padding-left:12px;white-space:nowrap;
+ font-family:"Archivo Narrow",sans-serif;font-weight:700;
+ font-size:calc(11.5px*var(--s));letter-spacing:.02em;color:var(--faint)}
 .rail{position:sticky;top:0;z-index:50;background:#fff}
 .tabrow{display:flex;align-items:stretch;border-bottom:1px solid var(--line)}
 .tabs{display:flex;align-items:stretch;flex:1 1 auto;min-width:0;
@@ -196,7 +202,7 @@ body.v-card .sen>.t{box-shadow:none;font-weight:700}
 /* ── 1問送り ──────────────────────────────────────────── */
 body.v-one .main{padding-bottom:120px}
 body.v-one .r{padding:19px 0 3px}
-body.v-one .q{display:none;margin-top:0;max-width:46em}
+body.v-one .q{display:none;margin:0 auto;max-width:46em}
 body.v-one .q.oncur{display:block}
 body.v-one .cat-hd{display:none}
 .onebar{position:fixed;left:0;right:0;bottom:0;z-index:70;display:grid;
@@ -224,7 +230,8 @@ body.v-one .cat-hd{display:none}
  font-size:calc(12.5px*var(--s));line-height:1.65;color:#3D4756}
 .side .sn b{font-weight:700}
 .side .sf{margin-top:12px;padding-top:11px;border-top:1px solid var(--hair);
- display:flex;gap:12px;font-size:calc(11px*var(--s));font-weight:700;color:#A2AAB4}
+ display:flex;flex-wrap:wrap;gap:5px 12px;font-size:calc(11px*var(--s));font-weight:700;color:#A2AAB4}
+.side .sf span{white-space:nowrap}
 
 /* ── 1080px 以上＝左サイドバー ───────────────────────── */
 @media (min-width:1080px){
@@ -259,6 +266,7 @@ body.v-one .cat-hd{display:none}
  .rail .keys span{display:flex;align-items:center;gap:5px;line-height:2.1}
  .main{padding:16px 22px 60px}
  .intro{padding:14px 22px 0}
+ .printmode{padding:0 22px}
  /* 設問の中だけ2段組。切り口の縦スキャンは崩さない */
  body.v-list .rows{columns:2;column-gap:34px;column-rule:1px solid var(--hair);margin-top:12px}
  body.v-list .r{break-inside:avoid;padding:13px 0 2px}
@@ -321,9 +329,11 @@ body.v-one .cat-hd{display:none}
   -webkit-print-color-adjust:exact;print-color-adjust:exact}
  .sheet{width:auto;min-height:0}
  .top,.rail,.side,.onebar,.tip,#fab,summary{display:none}
- .printmode{display:block;font-size:calc(8pt*var(--s));color:var(--mute);
+ .printmode{display:flex;font-size:calc(8pt*var(--s));color:var(--mute);
   border-bottom:.8px solid var(--hair);padding:0 0 5pt;margin-bottom:5pt}
  .printmode b{color:var(--ink)}
+ .pm-mode{display:inline}
+ .pm-date{font-size:calc(7.6pt*var(--s));color:var(--faint)}
  .intro{display:block!important;padding:0}
  .intro[hidden]{display:block}
  .lg{font-size:calc(7.6pt*var(--s));line-height:1.5}
