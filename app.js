@@ -110,7 +110,6 @@ render(data);
  function setCfg(on){
   B.classList.toggle('cfg',on);
   cfg.setAttribute('aria-expanded',String(on));
-  cfg.querySelector('i').textContent=on?'−':'＋';
   save('cfg',on?'1':'');
  }
  cfg.addEventListener('click',function(){setCfg(!B.classList.contains('cfg'));});
@@ -337,12 +336,15 @@ render(data);
  /* 左ボタンを押している間は全表示。待ち時間は置かない（押した瞬間に出す）。
     画面のどこで押しても効く。離したあとの click はそのまま通すので、
     本文をクリックして1文だけ開いたままにする操作は今までどおり効く。
-    検索欄だけは、文字を選べるように外してある。 */
+    ただし「意味のあるクリック」の上では出さない。ボタン・タブ・検索欄と、
+    クリックで開け閉めする本文（文そのものと設問名）は、それぞれの動きが先。
+    余白を押したときだけ全表示になる。 */
+ var NOHOLD='button,a,input,textarea,select,summary,.sen,.q-hd';
  var lpOn=false;
  document.addEventListener('pointerdown',function(ev){
   if(ev.button!==0||!isMouse(ev)||!masked())return;
   var el=ev.target;
-  if(el&&el.closest&&el.closest('input,textarea,select'))return;
+  if(!el||!el.closest||el.closest(NOHOLD))return;
   lpOn=true;hold(true);
  });
  function lpEnd(){if(!lpOn)return;lpOn=false;hold(false);}

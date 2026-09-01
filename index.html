@@ -21,7 +21,7 @@
 <nav class="rail" id="rail" aria-label="分類とツール">
 <div class="tabrow">
 <div class="tabs" role="tablist" id="tabs"></div>
-<button id="cfg" class="cfgb" type="button" aria-expanded="false" aria-controls="bar">設定 <i>＋</i></button>
+<button id="cfg" class="cfgb" type="button" aria-expanded="false" aria-controls="bar" aria-label="設定" title="設定"><svg viewBox="0 0 24 24" width="15" height="15" aria-hidden="true" focusable="false"><circle cx="12" cy="12" r="7.1" fill="none" stroke="currentColor" stroke-width="1.5"/><circle cx="12" cy="12" r="2.7" fill="none" stroke="currentColor" stroke-width="1.5"/><path d="M12 3.1v2.3M12 18.6v2.3M3.1 12h2.3M18.6 12h2.3M5.9 5.9l1.6 1.6M16.5 16.5l1.6 1.6M18.1 5.9l-1.6 1.6M7.5 16.5l-1.6 1.6" stroke="currentColor" stroke-width="2.1" fill="none"/></svg></button>
 </div>
 <div class="bar" id="bar"><div class="tools">
 <input id="q" type="search" placeholder="語で絞る（全分類を横断）" aria-label="横断検索">
@@ -42,7 +42,7 @@
 <button id="pr" class="desk" type="button">A4で印刷</button>
 </div>
 <div class="keys"><span><kbd>2</kbd><kbd>3</kbd> 枠を隠す</span>
-<span><kbd>0</kbd>／左ボタン 押している間 全表示</span>
+<span><kbd>0</kbd>／余白を押している間 全表示</span>
 <span>空欄にカーソルを置くと出る</span>
 <span><kbd>←</kbd><kbd>→</kbd> 分類</span>
 <span><kbd>V</kbd> 表示の切替</span>
@@ -58,7 +58,7 @@
 <div class="nt">目的の骨格は <b>性能語 ＋ 接続</b> の2つだけ。性能語は閉じた集合なので、真ん中が出てこないのは記憶ではなく<b>一覧を持っていない</b>だけ。1語選んで接続をつければ埋まる。</div>
 <div class="grade" id="grade"></div>
 <details id="vocd"><summary>性能語の一覧と、文の組み立て</summary><div class="voc" id="voc"></div></details></div>
-<div class="tip">性能語（緑のラベル）は最初から出ています。隠れているのは<b>接続の言い回し</b>だけなので、本文のどこをタップしても1回で開きます（隠している枠は<b>まとめて</b>開きます）。設問名をタップ＝その設問ごと開く・閉じる。PCは<b>空欄にカーソルを置くだけ</b>でもその文が出ます。<b>全表示</b>で全部出す（<kbd>0</kbd>か左ボタンを押している間も。画面のどこでも効きます）。印刷は<b>いま表示している分類だけ</b>が出ます。</div>
+<div class="tip">性能語（緑のラベル）は最初から出ています。隠れているのは<b>接続の言い回し</b>だけなので、本文のどこをタップしても1回で開きます（隠している枠は<b>まとめて</b>開きます）。設問名をタップ＝その設問ごと開く・閉じる。PCは<b>空欄にカーソルを置くだけ</b>でもその文が出ます。<b>全表示</b>で全部出す（<kbd>0</kbd>か、余白を左ボタンで押している間も）。印刷は<b>いま表示している分類だけ</b>が出ます。</div>
 </div>
 
 <div class="main"><div id="cats"></div></div>
