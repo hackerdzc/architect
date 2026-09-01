@@ -3,15 +3,19 @@
    questions.json を読み込んで本文を組み立てる。
    本文中の #…# は赤い数字（.v）になる。<b>…</b> はそのまま太字。 */
 function v(s){return s.replace(/#([^#]+)#/g,'<span class="v">$1</span>');}
+function esc(s){return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/"/g,'&quot;');}
 function fcls(f){return f==='般'?' gen':f==='既'?' kizon':f==='1'?' lo':'';}
 var SRC={T:['src','T'],S:['src','S'],TS:['src both','T·S'],N:['src n','日'],
          gen:['src gen','般'],kizon:['src kizon','既']};
 
 function rowHTML(r){
  var s=SRC[r.src]||SRC.T;
- return '<div class="r'+(r.src==='gen'?' gen':'')+'"><div class="kir">'+r.kir+'</div><div class="sen">'+
+ return '<div class="r'+(r.src==='gen'?' gen':'')+'">'+
+  '<div class="khd"><span class="kir">'+r.kir+'</span>'+
+  (r.perf?'<span class="perf">'+r.perf+'</span>':'')+'</div>'+
+  '<div class="sen">'+
   '<span class="t">'+v(r.t)+'</span>'+
-  '<span class="p"'+(r.perf?' data-perf="'+r.perf+'"':'')+'>'+v(r.p)+'</span>'+
+  '<span class="p"'+(r.perf?' data-perf="'+esc(r.perf)+'"':'')+'>'+v(r.p)+'</span>'+
   '<span class="j">'+v(r.j)+'</span>'+
   '<span class="'+s[0]+'">'+s[1]+'</span></div></div>';
 }
@@ -19,7 +23,7 @@ function qHTML(q){
  var allgen=q.rows.length&&q.rows.every(function(r){return r.src==='gen';});
  return '<div class="q"'+(allgen?' data-allgen="1"':'')+'><div class="q-hd"><span class="q-nm">'+q.nm+'</span>'+
   '<span class="q-f'+fcls(q.f)+'">'+q.f+'</span></div>'+
-  q.rows.map(rowHTML).join('')+'</div>';
+  '<div class="rows">'+q.rows.map(rowHTML).join('')+'</div></div>';
 }
 function count(c,noGen){return c.questions.reduce(function(n,q){
   return n+q.rows.filter(function(r){return !(noGen&&r.src==='gen');}).length;},0);}
@@ -66,7 +70,7 @@ function render(data){
  function chips(words){
   return words.split('／').map(function(w){
    w=w.trim();
-   return '<span class="vw" data-w="'+w+'">'+w+'<i></i></span>';
+   return '<span class="vw" data-w="'+esc(w)+'">'+w+'<i></i></span>';
   }).join('');
  }
  document.getElementById('voc').innerHTML=data.vocab.map(function(w){
@@ -85,36 +89,57 @@ function render(data){
 function init(data){
 render(data);
  var B=document.body,root=document.documentElement;
- var q=document.getElementById('q'),fab=document.getElementById('fab'),vocd=document.getElementById('vocd');
+ var q=document.getElementById('q'),vocd=document.getElementById('vocd');
+ var intro=document.getElementById('intro'),lgb=document.getElementById('lgb');
+ var side=document.getElementById('side'),onebar=document.getElementById('onebar');
  var qs=[].slice.call(document.querySelectorAll('.q'));
  var secs=[].slice.call(document.querySelectorAll('.cat'));
  var tabs=[].slice.call(document.querySelectorAll('.tab'));
  var vrows=[].slice.call(document.querySelectorAll('.vrow'));
- var ps=document.createElement('style');document.head.appendChild(ps);
- ps.textContent='@page{size:A4 portrait;margin:12mm}';
  var STEPS=[0.85,1,1.15,1.32,1.5],scale=1,cur='plan';
  var NAME={plan:'計画',str:'構造',mep:'設備',eco:'環境負荷低減',all:'すべて'};
  var ORDER=['plan','str','mep','eco','all'];
- var mobile=window.matchMedia('(max-width:860px)');
- // サイドバーが出ない幅では、下スクロール中にツールの行だけたたむ
- var compact=window.matchMedia('(max-width:1079px)');
+ var VIEWS=['list','card','one'],view='list',oneIdx=0;
+ var mobile=window.matchMedia('(max-width:1079px)');
+ function save(k,v){try{localStorage.setItem('kj-'+k,v);}catch(e){}}
+ function load(k){try{return localStorage.getItem('kj-'+k);}catch(e){return null;}}
+
+ /* 凡例・使い方：初回だけ開く。以後は畳んだまま */
+ if(!load('seen')){intro.hidden=false;lgb.setAttribute('aria-expanded','true');save('seen','1');}
+ lgb.addEventListener('click',function(){
+  intro.hidden=!intro.hidden;
+  lgb.setAttribute('aria-expanded',String(!intro.hidden));
+  lgb.querySelector('i').textContent=intro.hidden?'＋':'−';
+ });
  vocd.open=!mobile.matches;
 
- // 浮かせたツール列は場所を取らないので、そのぶんの余白を rail に持たせる
- var railEl=document.getElementById('rail'),barEl=railEl.querySelector('.bar');
- function barh(){railEl.style.setProperty('--barh',
-   compact.matches?barEl.offsetHeight+'px':'0px');}
- if(window.ResizeObserver)new ResizeObserver(barh).observe(barEl);
- window.addEventListener('resize',barh);
- barh();
- 
- function vocab(c){
-  var noGen=B.classList.contains('no-gen'),n={},shown={};
+ /* ── 性能語の一覧（右レール／凡例内） ───────────────── */
+ function perfCounts(c){
+  var noGen=B.classList.contains('no-gen'),n={};
   DATA.cats.forEach(function(k){
    if(c!=='all'&&k.id!==c)return;
-   k.questions.forEach(function(q){q.rows.forEach(function(r){
+   k.questions.forEach(function(qq){qq.rows.forEach(function(r){
     if(noGen&&r.src==='gen')return;
     if(r.perf)n[r.perf]=(n[r.perf]||0)+1;});});});
+  return n;
+ }
+ function sideRender(c){
+  if(!side)return;
+  var n=perfCounts(c);
+  var ws=Object.keys(n).sort(function(a,b){return n[b]-n[a]||a.localeCompare(b,'ja');});
+  var others=DATA.cats.filter(function(k){return k.id!==c;}).map(function(k){
+   var m=perfCounts(k.id);
+   return '<span>'+k.name+' '+Object.keys(m).length+'語</span>';}).join('');
+  side.innerHTML='<h3>性能語の一覧<em>目的はここから選ぶ</em></h3>'+
+   '<div class="sw">'+ws.map(function(w){
+    return '<span class="'+(n[w]<2?'rare':'')+'">'+w+'<i>'+n[w]+'</i></span>';}).join('')+'</div>'+
+   '<div class="sn">目的の骨格は <b>性能語 ＋ 接続</b> の2つだけ。ここが常に見えていれば、'+
+   '思い出す作業が<b>選ぶ作業</b>に変わる。</div>'+
+   '<div class="sf"><span>'+NAME[c]+' '+ws.length+'語</span>'+
+   (c==='all'?'':others)+'</div>';
+ }
+ function vocab(c){
+  var n=perfCounts(c),shown={};
   vrows.forEach(function(v){
    if(v.dataset.voc==='other')return;
    v.hidden=!(c==='all'||v.dataset.voc==='common'||v.dataset.voc==='kizon'||v.dataset.voc===c);
@@ -127,11 +152,45 @@ render(data);
   var row=document.querySelector('.vrow[data-voc="other"]');
   row.hidden=!extra.length;
   document.getElementById('vother').innerHTML=extra.map(function(w){
-   return '<span class="vw" data-w="'+w+'">'+w+'<i>'+n[w]+'</i></span>';}).join('');
+   return '<span class="vw" data-w="'+esc(w)+'">'+w+'<i>'+n[w]+'</i></span>';}).join('');
+  sideRender(c);
  }
 
+ /* ── 表示の切替（リスト／カード／1問送り） ───────────── */
+ var vbtn={list:document.getElementById('vl'),card:document.getElementById('vc'),one:document.getElementById('vo')};
+ function shownQs(){return qs.filter(function(e){
+  return !e.hidden&&e.closest('.cat')&&!e.closest('.cat').hidden;});}
+ function oneShow(){
+  var list=shownQs();
+  qs.forEach(function(e){e.classList.remove('oncur');});
+  if(!list.length){onebar.hidden=true;return;}
+  oneIdx=Math.max(0,Math.min(list.length-1,oneIdx));
+  list[oneIdx].classList.add('oncur');
+  onebar.hidden=(view!=='one');
+ }
+ function setView(v){
+  view=v;save('view',v);
+  VIEWS.forEach(function(k){
+   B.classList.toggle('v-'+k,k===v);
+   vbtn[k].classList.toggle('on',k===v);
+   vbtn[k].setAttribute('aria-pressed',String(k===v));});
+  onebar.hidden=(v!=='one');
+  if(v==='one')oneShow();else qs.forEach(function(e){e.classList.remove('oncur');});
+  label();
+ }
+ VIEWS.forEach(function(k){vbtn[k].addEventListener('click',function(){setView(k);});});
+ document.getElementById('oprev').addEventListener('click',function(){
+  oneIdx--;oneShow();window.scrollTo({top:0,behavior:'auto'});});
+ document.getElementById('onext').addEventListener('click',function(){
+  oneIdx++;oneShow();window.scrollTo({top:0,behavior:'auto'});});
+ document.getElementById('omk').addEventListener('click',function(){
+  var c=document.querySelector('.q.oncur');
+  if(c){var k=c.querySelector('.q-nm').textContent;var d=load('done')||'';
+   if(d.indexOf('\n'+k+'\n')<0)save('done',(d||'\n')+k+'\n');}
+  oneIdx++;oneShow();window.scrollTo({top:0,behavior:'auto'});});
+
  function setCat(c){
-  cur=c;
+  cur=c;oneIdx=0;
   ['c-plan','c-str','c-mep','c-eco','all'].forEach(function(k){B.classList.remove(k);});
   B.classList.add('c-'+(c==='all'?'plan':c));
   if(c==='all')B.classList.add('all');
@@ -140,11 +199,12 @@ render(data);
   secs.forEach(function(s){s.hidden=(c!=='all'&&s.dataset.cat!==c);});
   vocab(c);
   filter();label();
+  if(view==='one')oneShow();
  }
  tabs.forEach(function(t){t.addEventListener('click',function(){
   q.value='';setCat(t.dataset.cat);
   window.scrollTo({top:0,behavior:mobile.matches?'auto':'smooth'});});});
- 
+
  function qtext(e){
   var noGen=B.classList.contains('no-gen');
   return e.querySelector('.q-nm').textContent+
@@ -158,6 +218,7 @@ render(data);
   if(v||noGen)secs.forEach(function(s){
    s.hidden=(s.dataset.cat!==cur&&cur!=='all')||
     ![].slice.call(s.querySelectorAll('.q')).some(function(e){return !e.hidden;});});
+  if(view==='one'){oneIdx=0;oneShow();}
  }
  function masked(){var c=B.classList;return c.contains('h-t')||c.contains('h-p')||c.contains('h-j');}
  function label(){
@@ -175,20 +236,20 @@ render(data);
   c.toggle('masked',masked());
  }
  function setScale(d){var i=STEPS.indexOf(scale);i=Math.max(0,Math.min(STEPS.length-1,i+d));
-  scale=STEPS[i];root.style.setProperty('--s',scale);}
- 
+  scale=STEPS[i];root.style.setProperty('--s',scale);save('s',scale);}
+ var sv=parseFloat(load('s'));if(STEPS.indexOf(sv)>=0){scale=sv;root.style.setProperty('--s',scale);}
+
  q.addEventListener('input',function(){
   if(q.value.trim()&&cur!=='all'){setCat('all');q.focus();return;}
   filter();label();});
- 
+
  function slot(id,cls,sel,onOpen){var b=document.getElementById(id);
   function go(){var on=B.classList.toggle(cls);b.classList.toggle('on',on);
-   [].forEach.call(document.querySelectorAll(sel),function(s){
-   s.classList.remove('show');s.classList.remove('hint');});
+   [].forEach.call(document.querySelectorAll(sel),function(s){s.classList.remove('show');});
    if(on&&onOpen)onOpen();label();}
   b.addEventListener('click',go);return go;}
  var gt=slot('ht','h-t','.sen .t');
- var gp=slot('hp','h-p','.sen .p',function(){vocd.open=true;});
+ var gp=slot('hp','h-p','.sen .p');
  var gj=slot('hj','h-j','.sen .j');
  function tog(id,cls){var b=document.getElementById(id);
   function go(){b.classList.toggle('on',B.classList.toggle(cls));label();}
@@ -205,72 +266,33 @@ render(data);
  document.getElementById('sm').addEventListener('click',function(){setScale(-1);});
  document.getElementById('sp').addEventListener('click',function(){setScale(1);});
  document.getElementById('pr').addEventListener('click',function(){vocd.open=true;label();window.print();});
- 
- var latched=false,downT=0;
- function peek(on){B.classList.toggle('peek',on);fab.classList.toggle('on',on);
-  fab.setAttribute('aria-pressed',String(on));}
- function unpeek(){latched=false;downT=0;peek(false);}
- function fdown(ev){
-  if(ev.cancelable)ev.preventDefault();
-  if(latched){unpeek();return;}
-  downT=Date.now();peek(true);}
- function fup(){
-  if(!downT)return;
-  if(Date.now()-downT<250){latched=true;downT=0;peek(true);}
-  else unpeek();}
- if(window.PointerEvent){
-  fab.addEventListener('pointerdown',fdown);
-  fab.addEventListener('pointerup',fup);
-  fab.addEventListener('pointercancel',unpeek);
-  fab.addEventListener('pointerleave',function(){if(downT)unpeek();});
- }else{
-  fab.addEventListener('touchstart',fdown,{passive:false});
-  fab.addEventListener('touchend',fup);
-  fab.addEventListener('touchcancel',unpeek);
-  fab.addEventListener('mousedown',fdown);
-  fab.addEventListener('mouseup',fup);
-  fab.addEventListener('mouseleave',function(){if(downT)unpeek();});
- }
- fab.addEventListener('contextmenu',function(ev){ev.preventDefault();});
 
- // iOS Safari はアドレスバーの開閉・ピンチズーム・キーボード表示で
- // position:fixed が古い viewport を基準にしてしまう。
- // 実際に見えている範囲（visualViewport）とのズレを打ち消して右下に留める。
- var vv=window.visualViewport;
- if(vv){
-  var fx=0,fy=0;
-  var fabfit=function(){
-   var dx=Math.round(vv.width+vv.offsetLeft-root.clientWidth);
-   var dy=Math.round(vv.height+vv.offsetTop-root.clientHeight);
-   if(dx===fx&&dy===fy)return;
-   fx=dx;fy=dy;
-   fab.style.transform=(dx||dy)?'translate('+dx+'px,'+dy+'px)':'';
-  };
-  vv.addEventListener('resize',fabfit);
-  vv.addEventListener('scroll',fabfit);
-  window.addEventListener('scroll',fabfit,{passive:true});
-  fabfit();
- }
- fab.addEventListener('keydown',function(e){
-  if(e.key===' '||e.key==='Enter'){e.preventDefault();latched=!latched;downT=0;peek(latched);}});
- 
+ /* 全表示：丸ボタン（fixed）はやめて、ツール列のボタンにする。
+    iOS Safari の下部バーに潜って押せない問題が原理的に起きない。 */
+ var pkb=document.getElementById('pk');
+ function peek(on){B.classList.toggle('peek',on);pkb.classList.toggle('on',on);
+  pkb.setAttribute('aria-pressed',String(on));}
+ pkb.addEventListener('click',function(){peek(!B.classList.contains('peek'));});
+
+ /* 本文はどこをタップしても1回で開く（枠ごと。設問名で設問まるごと） */
  document.addEventListener('click',function(ev){
   var el=ev.target;if(!el||!el.closest)return;
   var s=el.closest('.sen .t,.sen .p,.sen .j');
   if(s){var c=s.classList;
-   var isP=c.contains('p')&&B.classList.contains('h-p');
-   if(isP&&s.dataset.perf){
-    if(c.contains('show')){c.remove('show');c.remove('hint');}
-    else if(c.contains('hint')){c.remove('hint');c.add('show');}
-    else c.add('hint');
-    return;}
-   if((c.contains('t')&&B.classList.contains('h-t'))||isP||
+   if((c.contains('t')&&B.classList.contains('h-t'))||
+      (c.contains('p')&&B.classList.contains('h-p'))||
       (c.contains('j')&&B.classList.contains('h-j'))){c.toggle('show');return;}}
+  var sen=el.closest('.sen');
+  if(sen&&masked()){
+   var sp=[].slice.call(sen.querySelectorAll('.t,.p,.j'));
+   var open=sp.some(function(x){return x.classList.contains('show');});
+   sp.forEach(function(x){x.classList.toggle('show',!open);});
+   return;}
   var h=el.closest('.q-hd');
   if(h&&masked()){
-   var sp=[].slice.call(h.parentNode.querySelectorAll('.sen .t,.sen .p,.sen .j'));
-   var open=sp.some(function(x){return x.classList.contains('show');});
-   sp.forEach(function(x){x.classList.toggle('show',!open);x.classList.remove('hint');});}
+   var all=[].slice.call(h.parentNode.querySelectorAll('.sen .t,.sen .p,.sen .j'));
+   var op=all.some(function(x){return x.classList.contains('show');});
+   all.forEach(function(x){x.classList.toggle('show',!op);});}
  });
  document.addEventListener('keydown',function(e){
   if(e.target.tagName==='INPUT'){if(e.key==='Escape'){q.value='';filter();label();q.blur();}return;}
@@ -282,29 +304,19 @@ render(data);
   else if(k==='0'&&!e.repeat){peek(true);e.preventDefault();}
   else if(k==='ArrowRight'){setCat(ORDER[(i+1)%ORDER.length]);e.preventDefault();}
   else if(k==='ArrowLeft'){setCat(ORDER[(i+ORDER.length-1)%ORDER.length]);e.preventDefault();}
+  else if(k.toLowerCase()==='v'){setView(VIEWS[(VIEWS.indexOf(view)+1)%VIEWS.length]);}
   else if(k.toLowerCase()==='m'){gm();}
+  else if(k.toLowerCase()==='p'){vocd.open=true;label();window.print();e.preventDefault();}
   else if(k==='+'||k==='='){setScale(1);e.preventDefault();}
   else if(k==='-'){setScale(-1);e.preventDefault();}
   else if(k==='/'){q.focus();e.preventDefault();}
-  else if(k==='Escape'){unpeek();}
+  else if(k==='Escape'){peek(false);}
  });
- document.addEventListener('keyup',function(e){if(e.key==='0')unpeek();});
- var lastY=0,tick=false;
- window.addEventListener('scroll',function(){
-  if(!compact.matches){B.classList.remove('barhide');lastY=window.scrollY||0;return;}
-  if(tick)return;tick=true;
-  requestAnimationFrame(function(){var y=window.scrollY||0;
-   if(y>150&&y>lastY+8)B.classList.add('barhide');
-   else if(y<lastY-8||y<80)B.classList.remove('barhide');
-   lastY=y;tick=false;});
- },{passive:true});
- q.addEventListener('focus',function(){B.classList.remove('barhide');});
- if(mobile.addEventListener){
-  mobile.addEventListener('change',function(){
-   B.classList.remove('barhide');vocd.open=!mobile.matches;});
-  compact.addEventListener('change',function(){B.classList.remove('barhide');barh();});
- }
+ document.addEventListener('keyup',function(e){if(e.key==='0')peek(false);});
+ if(mobile.addEventListener)mobile.addEventListener('change',function(){vocd.open=!mobile.matches;});
  window.addEventListener('beforeprint',function(){vocd.open=true;label();});
+
+ var vw=load('view');setView(VIEWS.indexOf(vw)>=0?vw:'list');
  setCat('plan');
  recount();
 }

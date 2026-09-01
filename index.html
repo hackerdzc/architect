@@ -3,13 +3,20 @@
 <title>1級建築士製図試験　記述練習</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Archivo+Narrow:wght@600;700&family=Zen+Kaku+Gothic+New:wght@400;500;700&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Archivo+Narrow:wght@600;700&family=Zen+Kaku+Gothic+New:wght@400;500;700;900&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="style.css">
-</head><body class="c-plan"><div class="sheet">
+</head><body class="c-plan v-list h-p"><div class="sheet">
 <div class="printmode" id="pm"></div>
-<div class="hd"><h1>1級建築士製図試験　記述練習</h1>
-<div class="sb">分類を選ぶ → 切り口で引く → 一文で覚える → 弱い枠だけ隠して試す</div>
-<div class="lg">太字＝キーワード　数字＝<b>赤</b>　開いた空欄＝<span class="g">緑の下地</span>　<span class="src">T</span>＝TAC　<span class="src">S</span>＝総合　<span class="src both">T·S</span>＝両校一致　<span class="src n">日</span>＝日建の別解　<span class="src gen">般</span>＝一般に問われる論点　<span class="src kizon">既</span>＝既存部との配慮</div></div>
+
+<div class="top">
+<span class="top-nm">記述練習</span>
+<span class="views" role="tablist" aria-label="表示">
+<button id="vl" type="button" class="on" aria-pressed="true">リスト</button>
+<button id="vc" type="button" aria-pressed="false">カード</button>
+<button id="vo" type="button" aria-pressed="false">1問送り</button>
+</span>
+<button id="lgb" type="button" class="lgb" aria-expanded="false" aria-controls="intro">凡例 <i>＋</i></button>
+</div>
 
 <nav class="rail" id="rail" aria-label="分類とツール">
 <div class="tabs" role="tablist" id="tabs"></div>
@@ -18,10 +25,12 @@
 <span class="lbl desk">隠す</span>
 <span class="slots">
 <button id="ht" type="button">対象</button>
-<button id="hp" type="button" class="rec">目的</button>
+<button id="hp" type="button" class="rec on">目的</button>
 <button id="hj" type="button">実施内容</button>
 <button id="gn" type="button" aria-pressed="true" aria-label="一般論点（般）の表示">般</button>
 </span>
+<span class="sep desk"></span>
+<button id="pk" type="button" class="pk" aria-pressed="false">全表示</button>
 <span class="sep desk"></span>
 <button id="mk" class="desk" type="button">マーカー</button>
 <button id="wd" class="desk" type="button">書き込み欄</button>
@@ -30,26 +39,32 @@
 <button id="sp" type="button" aria-label="字を大きく">A＋</button>
 <button id="pr" class="desk" type="button">A4で印刷</button>
 </div>
-<div class="keys"><span><kbd>1</kbd><kbd>2</kbd><kbd>3</kbd> 対象・目的・実施内容を隠す</span>
+<div class="keys"><span><kbd>1</kbd><kbd>2</kbd><kbd>3</kbd> 枠を隠す</span>
 <span><kbd>0</kbd> 押している間だけ全表示</span>
-<span><kbd>←</kbd><kbd>→</kbd> 分類の切替</span>
+<span><kbd>←</kbd><kbd>→</kbd> 分類</span>
+<span><kbd>V</kbd> 表示の切替</span>
 <span><kbd>M</kbd> マーカー</span>
-<span><kbd>+</kbd><kbd>-</kbd> 字の大きさ</span>
-<span><kbd>/</kbd> 検索</span></div></div>
+<span><kbd>/</kbd> 検索</span>
+<span><kbd>P</kbd> A4で印刷</span></div></div>
 </nav>
+
+<div class="intro" id="intro" hidden>
+<div class="lg">太字＝キーワード　数字＝<b>赤</b>　開いた空欄＝<span class="g">緑の下地</span>　<span class="src">T</span>＝TAC　<span class="src">S</span>＝総合　<span class="src both">T·S</span>＝両校一致　<span class="src n">日</span>＝日建の別解　<span class="src gen">般</span>＝一般に問われる論点　<span class="src kizon">既</span>＝既存部との配慮</div>
 <div class="box"><h2>目的は思い出す枠ではなく、選ぶ枠</h2>
 <div class="ex"><span class="t">各客室の窓面は、</span><span class="p">快適性に配慮して、</span><span class="j">広く確保した。</span></div>
 <div class="nt">目的の骨格は <b>性能語 ＋ 接続</b> の2つだけ。性能語は閉じた集合なので、真ん中が出てこないのは記憶ではなく<b>一覧を持っていない</b>だけ。1語選んで接続をつければ埋まる。</div>
 <div class="grade" id="grade"></div>
 <details id="vocd"><summary>性能語の一覧と、文の組み立て</summary><div class="voc" id="voc"></div></details></div>
-
-<div class="tip">まず <b>対象・目的・実施内容</b> のどれかを押すと、その枠が点線の空欄になる。
-そのあと ─ 点線をクリック＝その枠だけ開く／設問名をクリック＝その設問をまとめて開く・閉じる／
-<b>目的</b>の空欄だけは3段階 ─ 1回目タップで<b>性能語だけ</b>、2回目で全文、3回目で空欄に戻る。
-右下の丸ボタン＝<b>タップで全部表示</b>、もう一度タップで戻す（長押しの間だけ表示も可）。
-印刷は<b>いま表示している分類だけ</b>が出る。</div>
-<div id="cats"></div>
+<div class="tip">性能語（緑のラベル）は最初から出ています。隠れているのは<b>接続の言い回し</b>だけなので、本文のどこをタップしても1回で開きます。設問名をタップ＝その設問をまとめて開く・閉じる。<b>全表示</b>で全部出す。印刷は<b>いま表示している分類だけ</b>が出ます。</div>
 </div>
-<button id="fab" type="button" aria-pressed="false" aria-label="答えを表示（タップで固定、長押しの間だけ表示）">答</button>
+
+<div class="main"><div id="cats"></div></div>
+</div>
+<aside class="side" id="side" aria-label="性能語の一覧"></aside>
+<div class="onebar" id="onebar" hidden>
+<button id="oprev" type="button">前へ</button>
+<button id="omk" type="button" class="mid">覚えた</button>
+<button id="onext" type="button">次へ</button>
+</div>
 <script src="app.js"></script>
 </body></html>
