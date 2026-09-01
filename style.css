@@ -29,7 +29,8 @@ a{color:var(--t-plan)}a:hover{color:#16405f}
 .lgb i{font-family:"Archivo Narrow",sans-serif;font-style:normal;font-size:calc(12px*var(--s));color:var(--ans)}
 
 .rail{position:sticky;top:0;z-index:50;background:#fff}
-.tabs{display:flex;align-items:stretch;border-bottom:1px solid var(--line);
+.tabrow{display:flex;align-items:stretch;border-bottom:1px solid var(--line)}
+.tabs{display:flex;align-items:stretch;flex:1 1 auto;min-width:0;
  overflow-x:auto;-webkit-overflow-scrolling:touch;scrollbar-width:none}
 .tabs::-webkit-scrollbar{display:none}
 .tab{flex:1 1 0;font:inherit;font-size:calc(12.5px*var(--s));font-weight:700;
@@ -41,6 +42,7 @@ a{color:var(--t-plan)}a:hover{color:#16405f}
 .tab-plan{--tc:var(--t-plan)}.tab-str{--tc:var(--t-str)}
 .tab-mep{--tc:var(--t-mep)}.tab-eco{--tc:var(--t-eco)}.tab-all{--tc:var(--ink)}
 .tab .n{font-family:"Archivo Narrow",sans-serif;font-size:calc(10.5px*var(--s));opacity:.7;margin-left:5px}
+.cfgb{display:none}
 
 .bar{border-bottom:1px solid var(--line)}
 .tools{display:flex;gap:4px;align-items:center;padding:6px 13px}
@@ -232,7 +234,8 @@ body.v-one .cat-hd{display:none}
   background:#fff;border-right:1px solid var(--line);
   padding:14px 12px calc(14px + env(safe-area-inset-bottom));
   overflow-y:auto;overscroll-behavior:contain;display:flex;flex-direction:column;gap:12px}
- .rail .tabs{flex-direction:column;overflow:visible;border-bottom:none;order:2}
+ .rail .tabrow{order:2;display:block;border-bottom:none}
+ .rail .tabs{flex-direction:column;overflow:visible}
  .rail .tab{flex:0 0 auto;display:flex;align-items:center;text-align:left;
   padding:0 10px;height:34px;font-size:calc(13.5px*var(--s))}
  .rail .tab .n{margin-left:auto;font-size:calc(11.5px*var(--s));color:#A2AAB4;opacity:1}
@@ -282,6 +285,20 @@ body.v-one .cat-hd{display:none}
  .tools{flex-wrap:wrap}
  .tools button{height:26px}
  #pk{margin-left:auto}
+ /* 検索・隠す・全表示・マーカー・字の大きさ・印刷は「設定」の中。
+    畳んでいる間は分類タブだけが残り、そのぶん本文が上に来る */
+ .bar{display:none}
+ body.cfg .bar{display:block;animation:baropen .12s ease}
+ @keyframes baropen{from{opacity:0;transform:translateY(-4px)}to{opacity:1;transform:none}}
+ .cfgb{display:flex;align-items:center;gap:5px;flex:0 0 auto;
+  font:inherit;font-size:calc(12.5px*var(--s));font-weight:700;
+  padding:7px 11px 6px;border:none;cursor:pointer;white-space:nowrap;
+  background:#fff;color:var(--faint);box-shadow:inset 1px 0 0 var(--line)}
+ .cfgb i{font-family:"Archivo Narrow",sans-serif;font-style:normal;
+  font-size:calc(13px*var(--s));color:var(--ans)}
+ .cfgb[aria-expanded="true"]{background:var(--ink);color:#fff;box-shadow:none}
+ .cfgb[aria-expanded="true"] i{color:#fff}
+ .cfgb:focus-visible{outline:2px solid var(--ink);outline-offset:-2px}
 }
 @media (max-width:520px){
  .tools{gap:5px}

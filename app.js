@@ -104,6 +104,18 @@ render(data);
  function save(k,v){try{localStorage.setItem('kj-'+k,v);}catch(e){}}
  function load(k){try{return localStorage.getItem('kj-'+k);}catch(e){return null;}}
 
+ /* 道具の開閉（1080px 未満だけ効く）。分類タブの右端の「設定」で開く。
+    畳んだ状態を既定にして、本文の取り分を増やしている */
+ var cfg=document.getElementById('cfg');
+ function setCfg(on){
+  B.classList.toggle('cfg',on);
+  cfg.setAttribute('aria-expanded',String(on));
+  cfg.querySelector('i').textContent=on?'−':'＋';
+  save('cfg',on?'1':'');
+ }
+ cfg.addEventListener('click',function(){setCfg(!B.classList.contains('cfg'));});
+ setCfg(load('cfg')==='1');
+
  /* 凡例・使い方：初回だけ開く。以後は畳んだまま */
  if(!load('seen')){intro.hidden=false;lgb.setAttribute('aria-expanded','true');save('seen','1');}
  lgb.addEventListener('click',function(){
