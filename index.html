@@ -5,7 +5,7 @@
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Archivo+Narrow:wght@600;700&family=Zen+Kaku+Gothic+New:wght@400;500;700;900&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="style.css">
-</head><body class="c-plan v-list h-p"><div class="sheet">
+</head><body class="c-plan v-list h-p h-d"><div class="sheet">
 <div class="printmode" id="pm"></div>
 
 <div class="top">
@@ -29,7 +29,9 @@
 <span class="slots">
 <button id="hp" type="button" class="rec on">目的</button>
 <button id="hj" type="button">実施内容</button>
+<button id="hd" type="button" class="on" title="図中の寸法・部位名を隠す">図中</button>
 <button id="gn" type="button" aria-pressed="true" aria-label="一般論点（般）の表示">般</button>
+<button id="dn" type="button" class="dn" aria-pressed="false" title="押すたび　全部 → 覚えた以外 → 覚えただけ">覚<i></i></button>
 </span>
 <span class="sep desk"></span>
 <button id="pk" type="button" class="pk" aria-pressed="false">全表示</button>
@@ -41,7 +43,10 @@
 </span>
 <button id="pr" class="desk" type="button">A4で印刷</button>
 </div>
-<div class="keys"><span><kbd>2</kbd><kbd>3</kbd> 枠を隠す</span>
+<div class="dnbar" id="dnbar" hidden>覚えた <b id="dnn">0</b> 件
+<button id="dnu" type="button">1つ戻す</button><button id="dnr" type="button">全部戻す</button></div>
+<div class="keys"><span><kbd>2</kbd><kbd>3</kbd><kbd>4</kbd> 枠を隠す</span>
+<span><kbd>5</kbd> 覚えた行を隠す</span>
 <span><kbd>0</kbd>／余白を押す間 全表示</span>
 <span>空欄にカーソルを置くと出る</span>
 <span><kbd>←</kbd><kbd>→</kbd> 分類</span>
@@ -58,7 +63,8 @@
 <div class="nt">目的の骨格は <b>性能語 ＋ 接続</b> の2つだけ。性能語は閉じた集合なので、真ん中が出てこないのは記憶ではなく<b>一覧を持っていない</b>だけ。1語選んで接続をつければ埋まる。</div>
 <div class="grade" id="grade"></div>
 <details id="vocd"><summary>性能語の一覧と、文の組み立て</summary><div class="voc" id="voc"></div></details></div>
-<div class="tip">性能語（緑のラベル）は最初から出ています。隠れているのは<b>接続の言い回し</b>だけなので、本文のどこをタップしても1回で開きます（隠している枠は<b>まとめて</b>開きます）。設問名をタップ＝その設問ごと開く・閉じる。PCは<b>空欄にカーソルを置くだけ</b>でもその文が出ます。<b>全表示</b>で全部出す（<kbd>0</kbd>か、余白を左ボタンで押している間も）。印刷は<b>いま表示している分類だけ</b>が出ます。</div>
+<div class="tip">性能語（緑のラベル）は最初から出ています。隠れているのは<b>接続の言い回し</b>だけなので、本文のどこをタップしても1回で開きます（隠している枠は<b>まとめて</b>開きます）。設問名をタップ＝その設問ごと開く・閉じる。PCは<b>空欄にカーソルを置くだけ</b>でもその文が出ます。<b>全表示</b>で全部出す（<kbd>0</kbd>か、余白を左ボタンで押している間も）。印刷は<b>いま表示している分類だけ</b>が出ます。<br><b>図示</b>の図は、丸番号をタップ＝その番号の文が開く。図中の寸法・部位名は<b>図中</b>で隠し、1つずつタップで開きます。
+<br>覚えた行は、切り口の左の<b>○</b>を押して印をつけます。ツールの<b>覚</b>（<kbd>5</kbd>）を押すたびに<b>全部 → 覚えた以外 → 覚えただけ</b>と変わります。印はこの端末にだけ残り、設問データは消えません。</div>
 </div>
 
 <div class="main"><div id="cats"></div></div>

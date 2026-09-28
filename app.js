@@ -8,10 +8,12 @@ function fcls(f){return f==='般'?' gen':f==='既'?' kizon':f==='1'?' lo':'';}
 var SRC={T:['src','T'],S:['src','S'],TS:['src both','T·S'],N:['src n','日'],
          gen:['src gen','般'],kizon:['src kizon','既']};
 
-function rowHTML(r){
+function rowHTML(r,k){
  var s=SRC[r.src]||SRC.T;
- return '<div class="r'+(r.src==='gen'?' gen':'')+'">'+
-  '<div class="khd"><span class="kir">'+r.kir+'</span>'+
+ return '<div class="r'+(r.src==='gen'?' gen':'')+'" data-k="'+esc(k)+'"'+
+  (r.perf?' data-perf="'+esc(r.perf)+'"':'')+(r.no?' data-no="'+r.no+'"':'')+'>'+
+  '<div class="khd"><button class="mkd" type="button" aria-label="覚えた" aria-pressed="false"></button>'+
+  (r.no?'<span class="no">'+r.no+'</span>':'')+'<span class="kir">'+r.kir+'</span>'+
   (r.perf?'<span class="perf">'+r.perf+'</span>':'')+'</div>'+
   '<div class="sen">'+
   '<span class="t">'+v(r.t)+'</span>'+
@@ -19,14 +21,48 @@ function rowHTML(r){
   '<span class="j">'+v(r.j)+'</span>'+
   '<span class="'+s[0]+'">'+s[1]+'</span></div></div>';
 }
-function qHTML(q){
- var allgen=q.rows.length&&q.rows.every(function(r){return r.src==='gen';});
- return '<div class="q"'+(allgen?' data-allgen="1"':'')+'><div class="q-hd"><span class="q-nm">'+q.nm+'</span>'+
+function qHTML(q,cid){
+ return '<div class="q"><div class="q-hd"><span class="q-nm">'+q.nm+'</span>'+
   '<span class="q-f'+fcls(q.f)+'">'+q.f+'</span></div>'+
-  '<div class="rows">'+q.rows.map(rowHTML).join('')+'</div></div>';
+  (q.ask?'<div class="ask">'+q.ask+'</div>':'')+
+  (q.fig?'<div class="fig" data-src="'+esc(q.fig)+'"></div>':'')+
+  '<div class="rows">'+q.rows.map(function(r){
+    return rowHTML(r,dkey(cid,q.nm,r.kir));}).join('')+'</div></div>';
 }
-function count(c,noGen){return c.questions.reduce(function(n,q){
-  return n+q.rows.filter(function(r){return !(noGen&&r.src==='gen');}).length;},0);}
+
+/* ── 覚えた行 ───────────────────────────────────────────
+   行の見分けは「分類｜設問名｜切り口」。設問データには何も書き込まず、
+   この端末の localStorage にだけ残す。文言を直すと印はその行だけ外れるが、
+   外れる側（＝また出てくる側）に倒しているので練習の取りこぼしにはならない。 */
+function dkey(cid,qnm,kir){return cid+'|'+qnm+'|'+kir;}
+var DONE={},DSTACK=[];
+function lsGet(k){try{return localStorage.getItem('kj-'+k);}catch(e){return null;}}
+function lsSet(k,v){try{localStorage.setItem('kj-'+k,v);}catch(e){}}
+function saveDone(){lsSet('done2',Object.keys(DONE).join('\n'));}
+function loadDone(data){
+ var s=lsGet('done2');
+ if(s!==null){s.split('\n').forEach(function(k){if(k)DONE[k]=1;});return;}
+ /* 旧「1問送りの覚えた」は設問名だけを持っていた。その設問の全行の印に読み替える */
+ var old=lsGet('done')||'';
+ if(old)data.cats.forEach(function(c){c.questions.forEach(function(q){
+  if(old.indexOf('\n'+q.nm+'\n')>=0)
+   q.rows.forEach(function(r){DONE[dkey(c.id,q.nm,r.kir)]=1;});});});
+ saveDone();
+}
+/* いまの表示。0＝全部 ／ 1＝覚えた以外 ／ 2＝覚えただけ */
+function dmode(){var c=document.body.classList;
+ return c.contains('only-done')?2:c.contains('hide-done')?1:0;}
+/* 行が今の設定で見えているか。件数・検索・性能語の数え方を1か所にまとめる */
+function rvis(el,noGen,dm){
+ if(noGen&&el.classList.contains('gen'))return false;
+ var on=el.classList.contains('done');
+ return dm===1?!on:dm===2?on:true;
+}
+function rows(cid){return document.querySelectorAll(
+  (cid==='all'?'.cat':'.cat[data-cat="'+cid+'"]')+' .r');}
+function count(cid,noGen,dm){var n=0;
+ [].forEach.call(rows(cid),function(el){if(rvis(el,noGen,dm))n++;});
+ return n;}
 
 var DATA=null,UPD='';
 /* 更新日付。令和で出す（令和1年＝2019年） */
@@ -39,9 +75,9 @@ function wareki(v){
 }
 function recount(){
  if(!DATA)return;
- var noGen=document.body.classList.contains('no-gen'),total=0;
+ var noGen=document.body.classList.contains('no-gen'),dm=dmode(),total=0;
  DATA.cats.forEach(function(c){
-  var n=count(c,noGen); total+=n;
+  var n=count(c.id,noGen,dm); total+=n;
   var el=document.querySelector('.tab[data-cat="'+c.id+'"] .n');
   if(el)el.textContent=n;
  });
@@ -52,7 +88,7 @@ function recount(){
   var rs=[].slice.call(q.querySelectorAll('.r')),vis=null;
   rs.forEach(function(r){
    r.classList.remove('lastvis');
-   if(!(noGen&&r.classList.contains('gen')))vis=r;
+   if(rvis(r,noGen,dm))vis=r;
   });
   if(vis)vis.classList.add('lastvis');
  });
@@ -60,17 +96,28 @@ function recount(){
 
 function render(data){
  DATA=data;
- var total=0;
  document.getElementById('cats').innerHTML=data.cats.map(function(c){
-  total+=count(c);
   return '<section class="cat c-'+c.id+'" data-cat="'+c.id+'">'+
    '<div class="cat-hd"><span class="cat-mk">'+c.name+'</span></div>'+
-   c.questions.map(qHTML).join('')+'</section>';
+   c.questions.map(function(q){return qHTML(q,c.id);}).join('')+'</section>';
  }).join('');
+ /* 覚えた印を本文に載せてから数える（件数は印を反映した数にする）。
+    設問データを直して行が入れ替わったときは、行き先のない印はここで捨てる。
+    印が外れた行はまた出てくるだけなので、練習の取りこぼしにはならない。 */
+ var seen={},lost=0;
+ [].forEach.call(document.querySelectorAll('.r'),function(el){
+  var on=!!DONE[el.dataset.k];
+  seen[el.dataset.k]=1;
+  el.classList.toggle('done',on);
+  el.querySelector('.mkd').setAttribute('aria-pressed',String(on));
+ });
+ Object.keys(DONE).forEach(function(k){if(!seen[k]){delete DONE[k];lost++;}});
+ if(lost)saveDone();
 
+ var total=count('all',false,0);
  document.getElementById('tabs').innerHTML=data.cats.map(function(c){
   return '<button class="tab tab-'+c.id+'" role="tab" data-cat="'+c.id+'" '+
-   'aria-selected="false" type="button">'+c.name+'<span class="n">'+count(c)+'</span></button>';
+   'aria-selected="false" type="button">'+c.name+'<span class="n">'+count(c.id,false,0)+'</span></button>';
  }).join('')+
   '<button class="tab tab-all" role="tab" data-cat="all" aria-selected="false" '+
   'type="button">すべて<span class="n">'+total+'</span></button>';
@@ -93,9 +140,39 @@ function render(data){
  document.getElementById('grade').innerHTML=data.grade;
 }
 
+/* ── 図示 ───────────────────────────────────────────────
+   図は figs/*.svg を読んで本文に埋め込む（CSS で線の色や空欄を切り替えるため）。
+   SVG の約束は3つ。
+   　.d  … 隠せる寸法・部位名。<g class="d" transform="…"><text text-anchor="middle">…</text></g>
+   　　　　 空欄の四角は文字数から見積もってここで足す（隠れた設問でも寸法が要らない）
+   　.mk … 注記の番号。data-no が設問の行の "no" とつながる
+   　id  … 図ごとに頭に名前をつける（pty-ar など）。同じページに並ぶため */
+function figPrep(box){
+ [].forEach.call(box.querySelectorAll('.d'),function(g){
+  var t=g.querySelector('text');if(!t||g.querySelector('rect'))return;
+  var fs=parseFloat(t.getAttribute('font-size'))||12,w=0;
+  t.textContent.split('').forEach(function(ch){w+=/[\x20-\x7e]/.test(ch)?.56:1;});
+  w=w*fs+6;
+  var r=document.createElementNS('http://www.w3.org/2000/svg','rect');
+  r.setAttribute('x',-w/2);r.setAttribute('y',-fs*.92);
+  r.setAttribute('width',w);r.setAttribute('height',fs*1.2);
+  g.insertBefore(r,t);
+ });
+}
+function loadFigs(){
+ [].forEach.call(document.querySelectorAll('.fig[data-src]'),function(box){
+  fetch(box.dataset.src).then(function(r){
+   if(!r.ok)throw new Error('HTTP '+r.status);return r.text();})
+  .then(function(s){box.innerHTML=s;figPrep(box);})
+  .catch(function(e){box.innerHTML='<div class="fig-err">図（'+esc(box.dataset.src)+'）を読み込めませんでした　'+e.message+'</div>';});
+ });
+}
+
 /* ── 操作 ─────────────────────────────────────────────── */
 function init(data){
+loadDone(data);
 render(data);
+loadFigs();
  var B=document.body,root=document.documentElement;
  var q=document.getElementById('q'),vocd=document.getElementById('vocd');
  var intro=document.getElementById('intro'),lgb=document.getElementById('lgb');
@@ -105,12 +182,12 @@ render(data);
  var tabs=[].slice.call(document.querySelectorAll('.tab'));
  var vrows=[].slice.call(document.querySelectorAll('.vrow'));
  var STEPS=[0.85,1,1.15,1.32,1.5],scale=1,cur='plan';
- var NAME={plan:'計画',str:'構造',mep:'設備',eco:'環境負荷低減',all:'すべて'};
- var ORDER=['plan','str','mep','eco','all'];
+ var NAME={all:'すべて'},ORDER=[];
+ data.cats.forEach(function(c){NAME[c.id]=c.name;ORDER.push(c.id);});
+ ORDER.push('all');
  var VIEWS=['list','card','one'],view='list',oneIdx=0;
  var mobile=window.matchMedia('(max-width:1079px)');
- function save(k,v){try{localStorage.setItem('kj-'+k,v);}catch(e){}}
- function load(k){try{return localStorage.getItem('kj-'+k);}catch(e){return null;}}
+ var save=lsSet,load=lsGet;
 
  /* 道具の開閉（1080px 未満だけ効く）。分類タブの右端の「設定」で開く。
     畳んだ状態を既定にして、本文の取り分を増やしている */
@@ -134,12 +211,11 @@ render(data);
 
  /* ── 性能語の一覧（右レール／凡例内） ───────────────── */
  function perfCounts(c){
-  var noGen=B.classList.contains('no-gen'),n={};
-  DATA.cats.forEach(function(k){
-   if(c!=='all'&&k.id!==c)return;
-   k.questions.forEach(function(qq){qq.rows.forEach(function(r){
-    if(noGen&&r.src==='gen')return;
-    if(r.perf)n[r.perf]=(n[r.perf]||0)+1;});});});
+  var noGen=B.classList.contains('no-gen'),dm=dmode(),n={};
+  [].forEach.call(rows(c),function(el){
+   if(!rvis(el,noGen,dm))return;
+   var p=el.dataset.perf;
+   if(p)n[p]=(n[p]||0)+1;});
   return n;
  }
  function sideRender(c){
@@ -202,15 +278,21 @@ render(data);
   oneIdx--;oneShow();window.scrollTo({top:0,behavior:'auto'});});
  document.getElementById('onext').addEventListener('click',function(){
   oneIdx++;oneShow();window.scrollTo({top:0,behavior:'auto'});});
+ /* 1問送りの「覚えた」は、その設問の見えている行すべてに印をつけて次へ進む */
  document.getElementById('omk').addEventListener('click',function(){
-  var c=document.querySelector('.q.oncur');
-  if(c){var k=c.querySelector('.q-nm').textContent;var d=load('done')||'';
-   if(d.indexOf('\n'+k+'\n')<0)save('done',(d||'\n')+k+'\n');}
-  oneIdx++;oneShow();window.scrollTo({top:0,behavior:'auto'});});
+  var c=document.querySelector('.q.oncur'),at=oneIdx;
+  if(c){
+   var noGen=B.classList.contains('no-gen'),dm=dmode();
+   mark([].filter.call(c.querySelectorAll('.r'),function(r){
+    return rvis(r,noGen,dm);}),true);
+  }
+  /* 隠す設定だと印をつけた設問自体が消えるので、その場合は進めない（次がもう来ている） */
+  oneIdx=(c&&c.hidden)?at:at+1;
+  oneShow();window.scrollTo({top:0,behavior:'auto'});});
 
  function setCat(c){
   cur=c;oneIdx=0;
-  ['c-plan','c-str','c-mep','c-eco','all'].forEach(function(k){B.classList.remove(k);});
+  ORDER.forEach(function(k){B.classList.remove(k==='all'?'all':'c-'+k);});
   B.classList.add('c-'+(c==='all'?'plan':c));
   if(c==='all')B.classList.add('all');
   root.style.setProperty('--cat', c==='all'?'var(--ink)':'var(--t-'+c+')');
@@ -224,30 +306,34 @@ render(data);
   q.value='';setCat(t.dataset.cat);
   window.scrollTo({top:0,behavior:mobile.matches?'auto':'smooth'});});});
 
- function qtext(e){
-  var noGen=B.classList.contains('no-gen');
+ function qtext(e,noGen,dm){
   return e.querySelector('.q-nm').textContent+
    [].filter.call(e.querySelectorAll('.r'),function(r){
-    return !(noGen&&r.classList.contains('gen'));}).map(function(r){return r.textContent;}).join('');
+    return rvis(r,noGen,dm);}).map(function(r){return r.textContent;}).join('');
  }
+ /* 見える行が1つも残らない設問・分類は、そのまま畳む（般・覚えた・検索とも同じ扱い） */
  function filter(){
-  var v=q.value.trim().toLowerCase(),noGen=B.classList.contains('no-gen');
+  var v=q.value.trim().toLowerCase(),noGen=B.classList.contains('no-gen'),dm=dmode();
   qs.forEach(function(e){
-   e.hidden=!!(noGen&&e.dataset.allgen)||!!(v&&qtext(e).toLowerCase().indexOf(v)===-1);});
-  if(v||noGen)secs.forEach(function(s){
+   e.hidden=![].some.call(e.querySelectorAll('.r'),function(r){return rvis(r,noGen,dm);})||
+    !!(v&&qtext(e,noGen,dm).toLowerCase().indexOf(v)===-1);});
+  secs.forEach(function(s){
    s.hidden=(s.dataset.cat!==cur&&cur!=='all')||
     ![].slice.call(s.querySelectorAll('.q')).some(function(e){return !e.hidden;});});
-  if(view==='one'){oneIdx=0;oneShow();}
+  if(view==='one')oneShow();   /* 位置は oneShow が範囲内に丸める。頭出しは呼ぶ側で */
  }
- function masked(){var c=B.classList;return c.contains('h-p')||c.contains('h-j');}
+ function masked(){var c=B.classList;return c.contains('h-p')||c.contains('h-j')||c.contains('h-d');}
  function label(){
   var c=B.classList,bl=[];
   if(c.contains('h-p'))bl.push('目的');
   if(c.contains('h-j'))bl.push('実施内容');
+  if(c.contains('h-d')&&document.querySelector('.q:not([hidden]) .fig'))bl.push('図中の寸法');
   var t=q.value.trim(),p=[NAME[cur]];
   p.push(bl.length?'<b>'+bl.join('・')+'</b> を空欄にした練習用':'<b>全文</b>（読む用）');
   if(c.contains('marker'))p.push('マーカーあり');
   if(c.contains('no-gen'))p.push('般をのぞく');
+  if(c.contains('hide-done'))p.push('覚えた行をのぞく');
+  if(c.contains('only-done'))p.push('覚えた行だけ');
   if(t)p.push('絞り込み：'+t);
   /* 画面に出すのは表題だけ。分類も、何をどう隠しているかも、紙にだけ添える */
   document.getElementById('pm').innerHTML='1級建築士製図試験　記述練習'+
@@ -261,7 +347,7 @@ render(data);
 
  q.addEventListener('input',function(){
   if(q.value.trim()&&cur!=='all'){setCat('all');q.focus();return;}
-  filter();label();});
+  oneIdx=0;filter();label();});
 
  function slot(id,cls,sel,onOpen){var b=document.getElementById(id);
   function go(){var on=B.classList.toggle(cls);b.classList.toggle('on',on);
@@ -270,6 +356,7 @@ render(data);
   b.addEventListener('click',go);return go;}
  var gp=slot('hp','h-p','.sen .p');
  var gj=slot('hj','h-j','.sen .j');
+ var gd=slot('hd','h-d','.fig .d');
  function tog(id,cls){var b=document.getElementById(id);
   function go(){b.classList.toggle('on',B.classList.toggle(cls));label();}
   b.addEventListener('click',go);return go;}
@@ -280,8 +367,65 @@ render(data);
   b.addEventListener('click',function(){
    var show=!B.classList.toggle('no-gen');
    b.classList.toggle('on',show);b.setAttribute('aria-pressed',String(show));
-   recount();vocab(cur);filter();label();});
+   refresh();});
  })();
+
+ /* ── 覚えた行 ─────────────────────────────────────────
+    切り口の左の○で1行ずつ印をつけ、「覚」で 全部→覚えた以外→覚えただけ を回す。
+    印は端末に残るだけで、questions.json には何も書かない。
+    間違えて押してもすぐ戻せるように、直前の分と全部の2つの戻し方を置いている。 */
+ var dnb=document.getElementById('dn'),dnbar=document.getElementById('dnbar');
+ function refresh(){recount();vocab(cur);filter();label();dnShow();}
+ function dnShow(){
+  var n=Object.keys(DONE).length,dm=dmode();
+  dnbar.hidden=!n;
+  document.getElementById('dnn').textContent=n;
+  document.getElementById('dnu').disabled=!DSTACK.length;
+  dnb.classList.toggle('on',dm===1);
+  dnb.classList.toggle('only',dm===2);
+  dnb.setAttribute('aria-pressed',String(dm>0));
+  dnb.querySelector('i').textContent=dm===1?'−':dm===2?'●':'';
+  dnb.title=dm===1?'覚えた行を隠している（もう一度押すと覚えた行だけ）':
+   dm===2?'覚えた行だけ出している（もう一度押すと全部）':
+   '押すたび　全部 → 覚えた以外 → 覚えただけ';
+ }
+ function mark(els,on){
+  var ch=[];
+  els.forEach(function(el){
+   if(!!DONE[el.dataset.k]===on)return;
+   if(on)DONE[el.dataset.k]=1;else delete DONE[el.dataset.k];
+   el.classList.toggle('done',on);
+   el.querySelector('.mkd').setAttribute('aria-pressed',String(on));
+   ch.push(el);
+  });
+  if(!ch.length)return;
+  if(on)DSTACK.push(ch.map(function(el){return el.dataset.k;}));
+  saveDone();refresh();
+ }
+ function unmark(keys){
+  var set={};keys.forEach(function(k){set[k]=1;});
+  mark([].filter.call(document.querySelectorAll('.r'),function(el){
+   return set[el.dataset.k];}),false);
+ }
+ dnb.addEventListener('click',function(){
+  var dm=(dmode()+1)%3;
+  B.classList.toggle('hide-done',dm===1);
+  B.classList.toggle('only-done',dm===2);
+  save('dm',String(dm));
+  refresh();
+ });
+ document.getElementById('dnu').addEventListener('click',function(){
+  var last=DSTACK.pop();
+  if(last)unmark(last);else dnShow();
+ });
+ document.getElementById('dnr').addEventListener('click',function(){
+  if(!confirm('覚えた印を全部外します。よろしいですか。'))return;
+  DSTACK=[];DONE={};
+  [].forEach.call(document.querySelectorAll('.r.done'),function(el){
+   el.classList.remove('done');
+   el.querySelector('.mkd').setAttribute('aria-pressed','false');});
+  saveDone();refresh();
+ });
  document.getElementById('sm').addEventListener('click',function(){setScale(-1);});
  document.getElementById('sp').addEventListener('click',function(){setScale(1);});
  document.getElementById('pr').addEventListener('click',function(){vocd.open=true;label();window.print();});
@@ -303,8 +447,28 @@ render(data);
 
  /* 本文はどこをタップしても1回で開く。隠している枠が2つあっても、
     全表示と同じように文まるごとが一度で出る（設問名で設問まるごと） */
+ function senOpen(sens,open){
+  sens.forEach(function(sen){[].forEach.call(sen.querySelectorAll('.t,.p,.j'),function(x){
+   x.classList.toggle('show',open);});});
+ }
  document.addEventListener('click',function(ev){
   var el=ev.target;if(!el||!el.closest)return;
+  /* 切り口の左の○：その行だけ覚えた印をつける・外す */
+  var md=el.closest('.mkd');
+  if(md){var r=md.closest('.r');mark([r],!r.classList.contains('done'));return;}
+  /* 図の寸法：押した1つだけ開く・閉じる */
+  var dg=el.closest('.fig .d');
+  if(dg){dg.classList.toggle('show');return;}
+  /* 図の番号：その番号の文を開く・閉じる。文のほうも一瞬光らせて、どれか分かるようにする */
+  var mk=el.closest('.fig .mk');
+  if(mk){
+   var rs=[].slice.call(mk.closest('.q').querySelectorAll('.r[data-no="'+mk.dataset.no+'"]'));
+   var sens=rs.map(function(r){return r.querySelector('.sen');});
+   if(masked()){
+    var op=sens.some(function(s){return s.querySelector('.show');});
+    senOpen(sens,!op);}
+   rs.forEach(function(r){r.classList.remove('ping');void r.offsetWidth;r.classList.add('ping');});
+   return;}
   var sen=el.closest('.sen');
   if(sen&&masked()){
    var sp=[].slice.call(sen.querySelectorAll('.t,.p,.j'));
@@ -315,7 +479,24 @@ render(data);
   if(h&&masked()){
    var all=[].slice.call(h.parentNode.querySelectorAll('.sen .t,.sen .p,.sen .j'));
    var op=all.some(function(x){return x.classList.contains('show');});
-   all.forEach(function(x){x.classList.toggle('show',!op);});}
+   all.forEach(function(x){x.classList.toggle('show',!op);});
+   [].forEach.call(h.parentNode.querySelectorAll('.fig .d'),function(x){x.classList.toggle('show',!op);});}
+ });
+ /* 図の番号と文を結ぶ：どちらかに触れている間、もう片方にも印をつける */
+ var link=null;
+ function setLink(q,no){
+  var k=q?no+'@'+qs.indexOf(q):null;
+  if(link&&link.k===k)return;
+  if(link)link.els.forEach(function(e){e.classList.remove('on');});
+  link=null;if(!q)return;
+  var els=[].slice.call(q.querySelectorAll('.r[data-no="'+no+'"],.fig .mk[data-no="'+no+'"]'));
+  els.forEach(function(e){e.classList.add('on');});
+  link={k:k,els:els};
+ }
+ document.addEventListener('pointerover',function(ev){
+  var el=ev.target;if(!el||!el.closest)return setLink(null);
+  var t=el.closest('.fig .mk,.r[data-no]');
+  setLink(t&&t.closest('.q'),t&&t.dataset.no);
  });
  /* マウスのときだけ効く2つ（ホバーで覗く／左ボタン長押しで全表示）。
     メディアクエリではなく pointerType を見る。環境によって
@@ -350,7 +531,7 @@ render(data);
     ただし「意味のあるクリック」の上では出さない。ボタン・タブ・検索欄と、
     クリックで開け閉めする本文（文そのものと設問名）は、それぞれの動きが先。
     余白を押したときだけ全表示になる。 */
- var NOHOLD='button,a,input,textarea,select,summary,.sen,.q-hd';
+ var NOHOLD='button,a,input,textarea,select,summary,.sen,.q-hd,.fig .d,.fig .mk';
  var lpOn=false;
  document.addEventListener('pointerdown',function(ev){
   if(ev.button!==0||!isMouse(ev)||!masked())return;
@@ -369,6 +550,8 @@ render(data);
   var k=e.key,i=ORDER.indexOf(cur);
   if(k==='2'){gp();e.preventDefault();}
   else if(k==='3'){gj();e.preventDefault();}
+  else if(k==='4'){gd();e.preventDefault();}
+  else if(k==='5'){dnb.click();e.preventDefault();}
   else if(k==='0'&&!e.repeat){hold(true);e.preventDefault();}
   else if(k==='ArrowRight'){setCat(ORDER[(i+1)%ORDER.length]);e.preventDefault();}
   else if(k==='ArrowLeft'){setCat(ORDER[(i+ORDER.length-1)%ORDER.length]);e.preventDefault();}
@@ -384,9 +567,12 @@ render(data);
  if(mobile.addEventListener)mobile.addEventListener('change',function(){vocd.open=!mobile.matches;});
  window.addEventListener('beforeprint',function(){vocd.open=true;label();});
 
+ var dm0=parseInt(load('dm'),10)||0;
+ B.classList.toggle('hide-done',dm0===1);
+ B.classList.toggle('only-done',dm0===2);
  var vw=load('view');setView(VIEWS.indexOf(vw)>=0?vw:'list');
  setCat('plan');
- recount();
+ recount();dnShow();
 }
 
 fetch('questions.json')

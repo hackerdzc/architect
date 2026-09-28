@@ -3,7 +3,7 @@
  --ink:#10161F; --mute:#5A6472; --faint:#8A929C; --hair:#EDF0F3; --line:#D3DBE3;
  --red:#C0202C; --ans:#0F6B45; --ans-bg:#CFEADD; --ans-off:#F0F5F2; --paper:#F0F2F5;
  --key:#FFE04D; --mk-y:#FFF0A0; --mk-b:#CDE7F6; --mk-p:#FBD5E1;
- --t-plan:#2E5C7E; --t-str:#7A5230; --t-mep:#1D6070; --t-eco:#6B3A5E; --t-common:#4A5261;
+ --t-plan:#2E5C7E; --t-str:#7A5230; --t-mep:#1D6070; --t-eco:#6B3A5E; --t-fig:#46497E; --t-common:#4A5261;
  --cat:var(--t-plan); --rail:216px; --side:316px;
 }
 *{box-sizing:border-box;margin:0;padding:0}
@@ -46,7 +46,7 @@ a{color:var(--t-plan)}a:hover{color:#16405f}
 .tab:focus-visible{outline:2px solid var(--ink);outline-offset:-2px}
 .tab[aria-selected="true"]{color:var(--tc);box-shadow:inset 0 -2px 0 var(--tc)}
 .tab-plan{--tc:var(--t-plan)}.tab-str{--tc:var(--t-str)}
-.tab-mep{--tc:var(--t-mep)}.tab-eco{--tc:var(--t-eco)}.tab-all{--tc:var(--ink)}
+.tab-mep{--tc:var(--t-mep)}.tab-eco{--tc:var(--t-eco)}.tab-fig{--tc:var(--t-fig)}.tab-all{--tc:var(--ink)}
 .tab .n{font-family:"Archivo Narrow",sans-serif;font-size:calc(10.5px*var(--s));opacity:.7;margin-left:5px}
 .cfgb{display:none}
 
@@ -121,7 +121,7 @@ body:not(.all) .cat-hd{display:none}
 .cat-mk{display:inline-block;font-size:calc(13px*var(--s));font-weight:700;color:#fff;
  padding:3px 11px 4px;letter-spacing:.08em;background:var(--cat)}
 .cat.c-plan{--cat:var(--t-plan)}.cat.c-str{--cat:var(--t-str)}
-.cat.c-mep{--cat:var(--t-mep)}.cat.c-eco{--cat:var(--t-eco)}
+.cat.c-mep{--cat:var(--t-mep)}.cat.c-eco{--cat:var(--t-eco)}.cat.c-fig{--cat:var(--t-fig)}
 
 .q{margin-top:18px}
 .q[hidden]{display:none}
@@ -150,6 +150,91 @@ body:not(.h-p) .perf{display:none}
 .src.n{font-family:inherit;font-size:calc(10px*var(--s));color:#B7C0CB}
 .src.kizon{font-family:inherit;color:#9A5B2E;box-shadow:inset 0 0 0 1px #E3C6AC;padding:0 4px}
 body.no-gen .r.gen{display:none}
+
+/* ── 覚えた行 ─────────────────────────────────────────
+   印は切り口の左の○。本文（.sen）とは別の場所に置いてあるので、
+   本文をタップして空欄を開く操作とはぶつからない。 */
+.mkd{flex:0 0 auto;width:calc(12px*var(--s));height:calc(12px*var(--s));padding:0;
+ cursor:pointer;border:none;border-radius:50%;background:none;
+ box-shadow:inset 0 0 0 1.5px #BDCAD8}
+.mkd:hover{box-shadow:inset 0 0 0 1.5px var(--ans)}
+.mkd:focus-visible{outline:2px solid var(--ink);outline-offset:2px}
+.r.done .mkd{background:var(--ans);box-shadow:none}
+.r.done .khd{background:var(--ans-off);box-shadow:inset 2px 0 0 #A9C6B8}
+.r.done .kir{color:#7E8B97}
+body:not(.only-done) .r.done .sen{opacity:.5}
+body:not(.only-done) .r.done:hover .sen{opacity:1}
+body.hide-done .r.done{display:none}
+body.only-done .r:not(.done){display:none}
+body.v-card .mkd{box-shadow:inset 0 0 0 1.5px rgba(255,255,255,.65)}
+body.v-card .mkd:hover{box-shadow:inset 0 0 0 1.5px #fff}
+body.v-card .r.done .mkd{background:#fff;box-shadow:none}
+body.v-card .r.done .khd{background:var(--cat);box-shadow:none;opacity:.6}
+body.v-card .r.done .kir{color:#fff}
+#dn i{font-family:"Archivo Narrow",sans-serif;font-style:normal;font-size:calc(9px*var(--s));
+ vertical-align:1px;margin-left:2px}
+.tools button.dn.on{background:var(--ans);color:#fff;box-shadow:none}
+.tools button.dn.only{background:#fff;color:var(--ans);box-shadow:inset 0 0 0 1.5px var(--ans)}
+.dnbar{display:flex;align-items:center;gap:6px;padding:0 13px 7px;
+ font-size:calc(10.5px*var(--s));font-weight:700;color:var(--faint)}
+.dnbar[hidden]{display:none}
+.dnbar b{font-family:"Archivo Narrow",sans-serif;font-size:calc(12px*var(--s));color:var(--ans)}
+.dnbar button{font:inherit;font-size:calc(10.5px*var(--s));font-weight:700;height:21px;padding:0 8px;
+ cursor:pointer;border:none;box-shadow:inset 0 0 0 1px var(--line);background:#fff;color:var(--mute)}
+.dnbar button:hover:not(:disabled){box-shadow:inset 0 0 0 1px var(--ink);color:var(--ink)}
+.dnbar button:disabled{opacity:.4;cursor:default}
+.dnbar #dnr{margin-left:auto}
+
+/* ── 図示 ─────────────────────────────────────────────── */
+.ask{margin-top:9px;font-size:calc(12.5px*var(--s));color:var(--mute);line-height:1.7;
+ border-left:3px solid var(--cat);padding:1px 0 1px 9px}
+.fig{margin-top:12px;padding:10px 6px;background:#fff;box-shadow:inset 0 0 0 1px var(--line);
+ min-height:120px}
+.fig svg{display:block;width:100%;max-width:680px;height:auto;margin:0 auto;overflow:visible}
+.fig-err{font-size:calc(12px*var(--s));color:var(--red);padding:8px}
+.fig text{font-family:inherit;font-weight:500;fill:var(--ink)}
+.fig .cl{fill:#2B3340}
+.fig .th{fill:none;stroke:#B6BEC8;stroke-width:.9}
+.fig .ceil{fill:none;stroke:var(--ink);stroke-width:2}
+.fig .ds{fill:#F5F7F9;stroke:var(--faint);stroke-width:1;stroke-dasharray:4 3}
+.fig .du{fill:#D8EBEF;stroke:var(--t-mep);stroke-width:1.2}
+.fig .du.ra{fill:#EEF1E2;stroke:#6E7A3A}
+.fig .grille{fill:#fff;stroke:#6E7A3A;stroke-width:1.2}
+.fig .air-a path{fill:none;stroke:var(--t-mep);stroke-width:1.3;marker-end:url(#pty-ar)}
+.fig .air{fill:none;stroke:#6E7A3A;stroke-width:1.3;stroke-dasharray:5 4;marker-end:url(#pty-ar)}
+.fig .arh{fill:var(--t-mep)}
+.fig .rm{font-weight:700;letter-spacing:.06em}
+.fig .lb{fill:var(--mute)}
+.fig .ld{fill:none;stroke:var(--faint);stroke-width:.8}
+.fig .lv text{font-family:"Archivo Narrow",sans-serif;font-weight:700;fill:var(--mute)}
+.fig .dm{fill:none;stroke:var(--faint);stroke-width:.8}
+.fig .d text{font-family:"Archivo Narrow",sans-serif;font-weight:700;fill:var(--red)}
+.fig .d.w text{font-family:inherit;fill:var(--ink)}
+.fig .d rect{fill:transparent}
+.fig .d,.fig .mk{cursor:pointer}
+/* 寸法の空欄。本文の空欄と同じ色で、同じ3経路（タップ／全表示／押している間）で開く */
+body.h-d .fig .d rect{fill:var(--ans-off);stroke:var(--ans);stroke-width:.8}
+body.h-d .fig .d text{fill:transparent}
+body.h-d .fig .d.show rect,body.peek.h-d .fig .d rect{fill:var(--ans-bg);stroke:none}
+body.h-d .fig .d.show text,body.peek.h-d .fig .d text{fill:var(--red)}
+body.h-d .fig .d.w.show text,body.peek.h-d .fig .d.w text{fill:var(--ink)}
+/* 図の下の文にある数字も、図中を隠している間は空欄にする（文を開けば出る） */
+body.h-d:not(.peek) .fig~.rows .sen:not(.hov) :is(.t,.p,.j):not(.show) .v{
+ color:transparent;background:var(--ans-off);box-shadow:inset 0 -2px 0 var(--ans)}
+.fig .mk circle{fill:#fff;stroke:var(--cat);stroke-width:1.6}
+.fig .mk text{font-family:"Archivo Narrow",sans-serif;font-weight:700;fill:var(--cat)}
+.fig .mk.on circle{fill:var(--cat)}
+.fig .mk.on text{fill:#fff}
+.no{display:inline-flex;align-items:center;justify-content:center;flex:0 0 auto;
+ width:calc(18px*var(--s));height:calc(18px*var(--s));border-radius:50%;
+ box-shadow:inset 0 0 0 1.5px var(--cat);color:var(--cat);background:#fff;
+ font-family:"Archivo Narrow",sans-serif;font-weight:700;font-size:calc(11px*var(--s))}
+.r.on .no{background:var(--cat);color:#fff}
+.r.on .khd{background:#ECEEF6}
+.r.ping .khd{animation:ping .9s ease}
+@keyframes ping{0%{background:var(--key)}100%{background:#F5F8FB}}
+body.v-card .no{box-shadow:none}
+body.v-card .r.on .khd{background:var(--cat)}
 
 /* 空欄：閉じている間も同じ文字が場所を取るので、開いても行がずれない */
 body.h-p .sen .p,body.h-j .sen .j{
@@ -250,6 +335,8 @@ body.v-one .cat-hd{display:none}
  .rail .tab[aria-selected="true"]{background:var(--tc);color:#fff;box-shadow:none}
  .rail .tab[aria-selected="true"] .n{color:rgba(255,255,255,.72)}
  .rail .bar{order:1;border-bottom:none;display:flex;flex-direction:column;gap:11px}
+ .rail .dnbar{order:2;padding:0}
+ .rail .dnbar #dnr{margin-left:auto}
  .rail .tools{display:grid;grid-template-columns:1fr 1fr;gap:6px;padding:0}
  .rail .tools input{grid-column:1/-1;width:100%;height:32px;font-size:calc(13px*var(--s))}
  .rail .lbl{grid-column:1/-1;border-top:1px solid var(--hair);padding-top:10px}
@@ -257,7 +344,7 @@ body.v-one .cat-hd{display:none}
  .rail .slots button{width:100%;padding:0;height:26px}
  .rail .grp{grid-column:1/-1;display:grid;grid-template-columns:1fr 34px 34px;gap:4px}
  .rail .grp button{width:100%;padding:0}
- .rail #gn{grid-column:1/-1;margin-left:0}
+ .rail #gn{margin-left:0}
  .rail .sep{display:none}
  .rail #pk{grid-column:1/-1}
  .rail #pr{grid-column:1/-1}
@@ -309,7 +396,7 @@ body.v-one .cat-hd{display:none}
 @media (max-width:520px){
  .tools{gap:5px}
  .tools input{flex:1 1 100%;height:30px;font-size:calc(13px*var(--s))}
- .slots{flex:1 1 100%;display:grid;grid-template-columns:repeat(2,1fr) 44px;gap:4px}
+ .slots{flex:1 1 100%;display:grid;grid-template-columns:repeat(3,1fr) 40px 40px;gap:4px}
  .slots button{width:100%;padding:0;height:26px}
  .grp{display:grid;grid-template-columns:1fr 40px 40px;gap:4px}
  .grp button{width:100%;padding:0}
@@ -362,7 +449,7 @@ body.v-one .cat-hd{display:none}
  .khd{padding:0!important;background:none!important;box-shadow:none!important}
  .kir{font-size:calc(7.4pt*var(--s));color:var(--t-plan)!important;background:none!important;
   box-shadow:none!important;padding:0 0 1pt!important;border-bottom:.5px solid var(--t-plan)}
- .perf{display:none!important}
+ .perf,.mkd,.dnbar{display:none!important}
  .sen{margin-top:2pt!important;padding-left:0!important;font-size:calc(9.2pt*var(--s));line-height:1.5}
  .sen .t{box-shadow:none!important;font-weight:700}
  .sen>.t,.sen>.p,.sen>.j{display:inline!important;padding:0!important;
@@ -377,7 +464,19 @@ body.v-one .cat-hd{display:none}
   color:transparent!important;border-bottom:1pt solid var(--line)!important}
  body.h-p .sen .p:not(.show) *,body.h-j .sen .j:not(.show) *{color:transparent!important}
  body.no-gen .r.gen{display:none}
+ body.hide-done .r.done{display:none!important}
+ body.only-done .r:not(.done){display:none!important}
+ .r.done .khd{background:none!important;box-shadow:none!important}
+ .r.done .kir{color:var(--t-plan)!important}
+ .r.done .sen{opacity:1!important}
  body.v-one .q,body.v-card .r{display:block!important}
+ .ask{margin-top:4pt;font-size:calc(8pt*var(--s));line-height:1.5;padding-left:5pt}
+ .fig{margin-top:4pt;padding:4pt;box-shadow:none;border:.5px solid var(--hair);break-inside:avoid}
+ .fig svg{max-width:150mm}
+ body.h-d .fig .d:not(.show) rect{fill:none;stroke:var(--line);stroke-width:.6}
+ body.h-d .fig .d:not(.show) text{fill:transparent}
+ .no{box-shadow:none;border:.6pt solid var(--t-plan);width:10pt;height:10pt;font-size:7pt;margin-right:3pt}
+ .r.on .no{background:#fff;color:var(--t-plan)}
 }
 
 .loaderr{margin:20px 16px;border-left:3px solid var(--red);background:#FDF3F4;
