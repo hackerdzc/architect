@@ -42,13 +42,16 @@ function revP(p){var s=p.replace(/、$/,'');
 function sentHTML(s,ord){
  var txt=(ord==='tjp'&&s.p)?s.t+revJ(s.j)+revP(s.p):s.t+s.p+s.j;
  return '<span class="ans-s">'+v(txt)+'</span>';}
-function ansHTML(data,ord){
+function ansHTML(data,ord,open){
  return (data.exams||[]).map(function(ex){
   return '<section class="ans-ex"><h2 class="ans-tt">'+esc(ex.title)+'</h2>'+
    ex.items.map(function(it){
+    var key=ex.id+'|'+it.no,isOpen=!!(open&&open[key]);
     var sens=(it.sentences||[]).map(function(s){return sentHTML(s,ord);}).join('');
-    return '<div class="ans-it"><div class="ans-q"><span class="no">'+esc(it.no)+'</span>'+
-     (it.cat?'<span class="ans-cat">'+esc(it.cat)+'</span>':'')+esc(it.q)+'</div>'+
+    return '<div class="ans-it'+(isOpen?'':' closed')+'" data-key="'+esc(key)+'">'+
+     '<div class="ans-q"><span class="no">'+esc(it.no)+'</span>'+
+     (it.cat?'<span class="ans-cat">'+esc(it.cat)+'</span>':'')+esc(it.q)+
+     '<span class="ans-tog">'+(isOpen?'閉じる':'開く')+'</span></div>'+
      (sens?'<p class="ans-a">'+sens+'</p>':'<p class="ans-a none">（図示）</p>')+'</div>';
    }).join('')+'</section>';
  }).join('');
@@ -292,21 +295,48 @@ loadFigs();
  var ansOrd=load('ansord')==='tjp'?'tjp':'tpj';
  var ansMode=load('ansmode')==='all'?'all':'one';
  var ansExam=load('ansexam')||'all', ansCat=load('anscat')||'all';
- var ansIdx=0, ansStage=0, ansPool=[];
+ var ansDueOnly=load('ansdue')==='1';
+ var ansIdx=0, ansStage=0, ansPool=[], ansOpen={};
  var ANS_CATS=['建築計画','構造計画','設備計画','環境・省エネ配慮'];
+ var ANS_RATE=[['fail','忘れた'],['hard','あいまい'],['good','覚えた'],['easy','楽勝']];
  var ansRowPerf={};
  data.cats.forEach(function(c){c.questions.forEach(function(q){q.rows.forEach(function(r){
   if(r.perf)ansRowPerf[c.id+'|'+q.nm+'|'+r.kir]=r.perf;});});});
 
- /* 1問ずつ表示する問の一覧（答案・分類で絞る）。図示だけの問は外す */
+ /* 覚えた（間隔反復）。端末の保存にだけ残す。日付は「今日からの日数」で持つ。 */
+ function srsAll(){try{return JSON.parse(lsGet('srs')||'{}');}catch(e){return {};}}
+ function todayN(){var d=new Date();return Math.floor((d.getTime()-d.getTimezoneOffset()*60000)/86400000);}
+ function itemKey(ex,it){return ex.id+'|'+it.no;}
+ function srsRate(key,r){
+  var all=srsAll(),s=all[key]||{ease:2.5,ivl:0,n:0},t=todayN();
+  if(r==='fail'){s.ivl=1;s.ease=Math.max(1.3,s.ease-0.2);}
+  else if(r==='hard'){s.ivl=Math.max(1,Math.round(Math.max(1,s.ivl)*1.2));s.ease=Math.max(1.3,s.ease-0.15);}
+  else if(r==='good'){s.ivl=s.n===0?1:s.n===1?3:Math.round(Math.max(1,s.ivl)*s.ease);}
+  else{s.ivl=s.n===0?4:Math.round(Math.max(1,s.ivl)*s.ease*1.3);s.ease+=0.15;}
+  s.n++;s.last=t;s.due=t+s.ivl;all[key]=s;
+  lsSet('srs',JSON.stringify(all));return s;
+ }
+ function srsDue(){
+  var all=srsAll(),t=todayN(),n=0;
+  (data.exams||[]).forEach(function(ex){ex.items.forEach(function(it){
+   var s=all[itemKey(ex,it)];if(s&&s.due<=t)n++;});});
+  return n;
+ }
+ function isDue(key){var s=srsAll()[key];return !!s&&s.due<=todayN();}
+
+ /* 問の絞り込み（答案・分類・今日の復習）。図示だけの問は外す */
+ function ansFilter(ex,it){
+  if(ansCat!=='all'&&it.cat!==ansCat)return false;
+  if(ansDueOnly&&!isDue(itemKey(ex,it)))return false;
+  return true;
+ }
  function ansBuildPool(){
   ansPool=[];
   (data.exams||[]).forEach(function(ex){
    if(ansExam!=='all'&&ex.id!==ansExam)return;
    ex.items.forEach(function(it){
     if(!it.sentences||!it.sentences.length)return;
-    if(ansCat!=='all'&&it.cat!==ansCat)return;
-    ansPool.push({ex:ex,it:it});});});
+    if(ansFilter(ex,it))ansPool.push({ex:ex,it:it});});});
   if(ansIdx>=ansPool.length)ansIdx=Math.max(0,ansPool.length-1);
  }
  /* 文を句（主語・目的・実施）に分けた列。並び順に従う */
@@ -328,67 +358,112 @@ loadFigs();
  }
  function ansCardHTML(){
   var cur=ansPool[ansIdx];
-  if(!cur)return '<p class="ans-none">この条件の問がありません。</p>';
-  var pcs=ansPieces(cur.it),hints=ansHints(cur.it);
+  if(!cur)return '<p class="ans-none">'+(ansDueOnly?'今日の復習はありません。':'この条件の問がありません。')+'</p>';
+  var key=itemKey(cur.ex,cur.it),pcs=ansPieces(cur.it),hints=ansHints(cur.it);
   var hp=hints.length?' '+hints.join('／'):'';
+  var done=ansStage>=pcs.length;
   var body=pcs.map(function(pc,i){
    if(i<ansStage)return '<span class="ans-s">'+v(pc.txt)+'</span>';
    if(pc.k==='p')return '<span class="ans-ph">＿＿＿＿<i>目的'+esc(hp)+'</i></span>';
    return '<span class="ans-ph">＿＿＿＿＿＿</span>';
   }).join('');
-  var done=ansStage>=pcs.length;
+  var st=srsAll()[key],t=todayN();
+  var info=!st?'未評価':(st.due<=t?'今日が復習日':'次は'+(st.due-t)+'日後（'+st.ivl+'日間隔）');
+  var rate=done?'<div class="ans-rate"><span class="ans-rl">覚え具合</span>'+
+   ANS_RATE.map(function(r){return '<button type="button" data-act="rate" data-v="'+r[0]+'">'+r[1]+'</button>';}).join('')+
+   '<span class="ans-next">'+info+'</span></div>':'';
   return '<div class="ans-card">'+
    '<div class="ans-meta"><span class="ans-cat">'+esc(cur.it.cat||'図示')+'</span>'+
    '<span class="ans-ex-nm">'+esc(cur.ex.title)+'</span>'+
    '<span class="ans-pos">'+(ansIdx+1)+' / '+ansPool.length+'</span></div>'+
    '<div class="ans-qq"><span class="no">'+esc(cur.it.no)+'</span>'+esc(cur.it.q)+'</div>'+
-   '<p class="ans-a">'+body+'</p>'+
+   '<p class="ans-a ans-click" title="クリックで次の句を出す">'+body+'</p>'+
    '<div class="ans-ctl">'+
     '<button type="button" data-act="prev">前の問</button>'+
     '<button type="button" data-act="back"'+(ansStage?'':' disabled')+'>戻す</button>'+
     (done?'<button type="button" data-act="reset">最初から</button>'
-          :'<button type="button" data-act="next" class="pri">次の句</button><button type="button" data-act="all">全部出す</button>')+
+          :'<button type="button" data-act="next" class="pri">次の句（Space）</button><button type="button" data-act="all">全部出す</button>')+
     '<button type="button" data-act="nextq">次の問</button>'+
-   '</div></div>';
+   '</div>'+rate+'</div>';
  }
  function renderAns(){
   ansBuildPool();
+  var el=document.getElementById('ans');
   var exOpts='<option value="all"'+(ansExam==='all'?' selected':'')+'>すべての答案</option>'+
    (data.exams||[]).map(function(ex){return '<option value="'+esc(ex.id)+'"'+(ansExam===ex.id?' selected':'')+'>'+esc(ex.title)+'</option>';}).join('');
   var chips=['all'].concat(ANS_CATS).map(function(c){
    return '<button type="button" data-act="cat" data-v="'+esc(c)+'" class="'+(ansCat===c?'on':'')+'">'+(c==='all'?'すべて':c)+'</button>';}).join('');
-  var tools='<div class="ans-tools">'+
-   '<select data-act="exam" aria-label="答案">'+exOpts+'</select>'+
-   '<span class="ans-chips">'+chips+'</span>'+
-   '<button type="button" data-act="mode" data-v="'+(ansMode==='one'?'all':'one')+'">'+(ansMode==='one'?'全部で見る':'1問ずつ見る')+'</button>'+
+  var due=srsDue();
+  var tools='<div class="ans-bar">'+
+   '<label class="ans-lb">答案<select data-act="exam">'+exOpts+'</select></label>'+
+   '<span class="ans-seg">'+
+    '<button type="button" data-act="mode" data-v="one" class="'+(ansMode==='one'?'on':'')+'">1問ずつ</button>'+
+    '<button type="button" data-act="mode" data-v="all" class="'+(ansMode==='all'?'on':'')+'">全部</button></span>'+
    '<button type="button" data-act="ord">'+(ansOrd==='tpj'?'主語・目的・実施':'主語・実施・目的')+'</button>'+
-   '</div>';
+   '<button type="button" data-act="due" class="ans-due'+(ansDueOnly?' on':'')+'">今日の復習 <b>'+due+'</b></button>'+
+   '</div>'+
+   '<div class="ans-bar ans-bar2"><span class="ans-chips">'+chips+'</span></div>';
   var body;
   if(ansMode==='one'){
    body='<div class="ans-one">'+ansCardHTML()+'</div>';
   }else{
    var fd={cats:data.cats,exams:(data.exams||[]).filter(function(ex){return ansExam==='all'||ex.id===ansExam;}).map(function(ex){
-    return {id:ex.id,title:ex.title,items:ex.items.filter(function(it){return ansCat==='all'||it.cat===ansCat;})};})};
-   body=ansHTML(fd,ansOrd);
+    return {id:ex.id,title:ex.title,items:ex.items.filter(function(it){return ansFilter(ex,it);})};})};
+   var any=false;fd.exams.forEach(function(ex){ex.items.forEach(function(it){if(!ansOpen[ex.id+'|'+it.no])any=true;});});
+   var has=fd.exams.some(function(ex){return ex.items.length;});
+   body='<div class="ans-bar"><button type="button" data-act="openall">'+(any?'全部開く':'全部閉じる')+'</button>'+
+    '<span class="ans-hint">問をクリックすると答えが開きます</span></div>'+
+    (has?ansHTML(fd,ansOrd,ansOpen):'<p class="ans-none">'+(ansDueOnly?'今日の復習はありません。':'この条件の問がありません。')+'</p>');
   }
-  document.getElementById('ans').innerHTML=tools+body;
+  el.innerHTML=tools+body;
  }
- document.getElementById('ans').addEventListener('click',function(e){
-  var b=e.target.closest('[data-act]');if(!b||b.tagName==='SELECT')return;
-  var a=b.dataset.act,val=b.dataset.v;
-  if(a==='mode'){ansMode=val;save('ansmode',val);ansStage=0;}
-  else if(a==='ord'){ansOrd=ansOrd==='tpj'?'tjp':'tpj';save('ansord',ansOrd);}
-  else if(a==='cat'){ansCat=val;save('anscat',val);ansIdx=0;ansStage=0;}
-  else if(a==='prev'){ansIdx=Math.max(0,ansIdx-1);ansStage=0;}
-  else if(a==='nextq'){ansIdx=Math.min(ansPool.length-1,ansIdx+1);ansStage=0;}
-  else if(a==='next'){ansStage++;}
-  else if(a==='back'){ansStage=Math.max(0,ansStage-1);}
-  else if(a==='all'){var cur=ansPool[ansIdx];ansStage=cur?ansPieces(cur.it).length:0;}
-  else if(a==='reset'){ansStage=0;}
-  renderAns();
+ var ansEl0=document.getElementById('ans');
+ ansEl0.addEventListener('click',function(e){
+  var b=e.target.closest('[data-act]');
+  if(b){
+   var a=b.dataset.act,val=b.dataset.v;
+   if(a==='mode'){ansMode=val;save('ansmode',val);ansStage=0;}
+   else if(a==='ord'){ansOrd=ansOrd==='tpj'?'tjp':'tpj';save('ansord',ansOrd);}
+   else if(a==='cat'){ansCat=val;save('anscat',val);ansIdx=0;ansStage=0;}
+   else if(a==='due'){ansDueOnly=!ansDueOnly;save('ansdue',ansDueOnly?'1':'0');ansIdx=0;ansStage=0;}
+   else if(a==='prev'){ansIdx=Math.max(0,ansIdx-1);ansStage=0;}
+   else if(a==='nextq'){ansIdx=Math.min(ansPool.length-1,ansIdx+1);ansStage=0;}
+   else if(a==='next'){ansStage++;}
+   else if(a==='back'){ansStage=Math.max(0,ansStage-1);}
+   else if(a==='all'){var cur=ansPool[ansIdx];ansStage=cur?ansPieces(cur.it).length:0;}
+   else if(a==='reset'){ansStage=0;}
+   else if(a==='rate'){
+    var c=ansPool[ansIdx];
+    if(c){srsRate(itemKey(c.ex,c.it),val);if(!ansDueOnly)ansIdx=Math.min(ansPool.length-1,ansIdx+1);ansStage=0;}
+   }
+   else if(a==='openall'){
+    var any2=false;
+    (data.exams||[]).forEach(function(ex){if(ansExam!=='all'&&ex.id!==ansExam)return;ex.items.forEach(function(it){
+     if(ansFilter(ex,it)&&!ansOpen[ex.id+'|'+it.no])any2=true;});});
+    (data.exams||[]).forEach(function(ex){if(ansExam!=='all'&&ex.id!==ansExam)return;ex.items.forEach(function(it){
+     if(ansFilter(ex,it))ansOpen[ex.id+'|'+it.no]=any2;});});
+   }
+   renderAns();return;
+  }
+  if(ansMode==='one'){
+   if(e.target.closest('.ans-a')){
+    var pc=ansPool[ansIdx];
+    if(pc&&ansStage<ansPieces(pc.it).length){ansStage++;renderAns();}
+    return;
+   }
+  }else{
+   var it=e.target.closest('.ans-it[data-key]');
+   if(it){ansOpen[it.dataset.key]=!ansOpen[it.dataset.key];renderAns();}
+  }
  });
- document.getElementById('ans').addEventListener('change',function(e){
+ ansEl0.addEventListener('change',function(e){
   if(e.target.dataset.act==='exam'){ansExam=e.target.value;save('ansexam',ansExam);ansIdx=0;ansStage=0;renderAns();}
+ });
+ document.addEventListener('keydown',function(e){
+  if(!ansOn||ansMode!=='one'||e.key!==' '||document.activeElement!==document.body)return;
+  var pc=ansPool[ansIdx];if(!pc)return;
+  e.preventDefault();
+  if(ansStage<ansPieces(pc.it).length){ansStage++;renderAns();}
  });
  renderAns();
  var ansEl=document.getElementById('ans'),catsEl=document.getElementById('cats');

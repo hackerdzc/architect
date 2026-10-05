@@ -523,3 +523,24 @@ body.v-one .cat-hd{display:none}
 .ans-tools{display:flex;flex-wrap:wrap;gap:.4em;align-items:center;margin:0 0 1em}
 .ans-chips{display:inline-flex;flex-wrap:wrap;gap:.3em}
 .ans-chips button.on{background:var(--ink);color:#fff}
+
+/* ── 解答：見た目・操作（調整） ── */
+.ans-bar{display:flex;flex-wrap:wrap;gap:.5em .6em;align-items:center;margin:0 0 .6em}
+.ans-bar2{margin-bottom:1em}
+.ans-lb{font-size:calc(10.5px*var(--s));color:var(--mute);display:inline-flex;gap:.4em;align-items:center}
+.ans-lb select{font:inherit;font-size:calc(11px*var(--s));padding:.3em .5em;border:1px solid var(--line);background:#fff;color:var(--ink)}
+.ans-seg{display:inline-flex}
+.ans-bar button{font:inherit;font-size:calc(10.5px*var(--s));font-weight:700;padding:.35em .8em;border:1px solid var(--ink);background:#fff;color:var(--ink);cursor:pointer;margin-left:-1px}
+.ans-seg button:first-child{margin-left:0}
+.ans-bar button.on{background:var(--ink);color:#fff}
+.ans-due b{font-weight:900;margin-left:.2em}
+.ans-hint{font-size:calc(10.5px*var(--s));color:var(--faint)}
+.ans-click{cursor:pointer}
+.ans-rate{display:flex;flex-wrap:wrap;gap:.4em;align-items:center;margin-top:1em;padding-top:.8em;border-top:1px dashed var(--line)}
+.ans-rl{font-size:calc(10.5px*var(--s));color:var(--mute);margin-right:.3em}
+.ans-rate button{font:inherit;font-size:calc(10.5px*var(--s));font-weight:700;padding:.4em .9em;border:1px solid var(--ink);background:#fff;color:var(--ink);cursor:pointer}
+.ans-rate button[data-v="good"]{background:var(--ink);color:#fff}
+.ans-next{margin-left:auto;font-size:calc(10.5px*var(--s));color:var(--mute)}
+.ans-it{border-top:1px solid var(--hair);padding:.8em 0 .9em;cursor:pointer}
+.ans-it.closed .ans-a{display:none}
+.ans-tog{margin-left:.6em;font-size:calc(10px*var(--s));color:var(--faint);font-weight:400}
