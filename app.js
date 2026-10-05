@@ -40,7 +40,7 @@ function revP(p){var s=p.replace(/、$/,'');
  if(/て$/.test(s))return s.replace(/て$/,'た。');
  return s+(/ように$/.test(s)?'配慮した。':'に配慮した。');}
 function sentHTML(s,ord){
- var txt=ord==='tjp'?s.t+revJ(s.j)+revP(s.p):s.t+s.p+s.j;
+ var txt=(ord==='tjp'&&s.p)?s.t+revJ(s.j)+revP(s.p):s.t+s.p+s.j;
  return '<span class="ans-s">'+v(txt)+'</span>';}
 function ansHTML(data,ord){
  return (data.exams||[]).map(function(ex){
