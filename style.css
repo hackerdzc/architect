@@ -544,3 +544,27 @@ body.v-one .cat-hd{display:none}
 .ans-it{border-top:1px solid var(--hair);padding:.8em 0 .9em;cursor:pointer}
 .ans-it.closed .ans-a{display:none}
 .ans-tog{margin-left:.6em;font-size:calc(10px*var(--s));color:var(--faint);font-weight:400}
+
+/* ── 解答：空欄（クリックで開く）と色分け ── */
+.ans-pc{cursor:pointer;padding:2px 1px 3px;-webkit-box-decoration-break:clone;box-decoration-break:clone;
+ transition:color .08s ease,background-color .12s ease}
+.ans-pc:not(.open){color:transparent;background:var(--ans-off);box-shadow:inset 0 -2px 0 #BCCBD8}
+.ans-pc.k-p:not(.open){box-shadow:inset 0 -2px 0 var(--ans)}
+.ans-pc.k-t{font-weight:700}
+.ans-pc.k-t.open{color:var(--t-plan)}
+.ans-pc.k-p.open{color:var(--ans);background:var(--ans-bg)}
+.ans-pc.k-j.open{color:var(--ink)}
+@media (hover:hover) and (pointer:fine){
+ .ans-pc:not(.open):hover.k-t{color:var(--t-plan)}
+ .ans-pc:not(.open):hover.k-p{color:var(--ans);background:var(--ans-bg)}
+ .ans-pc:not(.open):hover.k-j{color:var(--ink)}
+}
+.ans-tag{display:inline-block;font-size:calc(10px*var(--s));color:var(--ans);border:1px solid var(--ans);
+ padding:0 .4em;margin:0 .4em 0 .1em;vertical-align:.15em}
+.ans-leg{display:inline-flex;gap:.5em;margin-left:auto;font-size:calc(10.5px*var(--s));font-weight:700}
+.ans-leg i{font-style:normal;padding:0 .45em}
+.ans-leg .k-t{color:var(--t-plan);box-shadow:inset 0 -2px 0 #BCCBD8}
+.ans-leg .k-p{color:var(--ans);background:var(--ans-bg)}
+.ans-leg .k-j{color:var(--ink);box-shadow:inset 0 -2px 0 var(--line)}
+.ans-it{border-top:1px solid var(--hair);padding:.8em 0 .9em}
+.ans-it .ans-q{margin-bottom:.4em}
