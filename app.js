@@ -30,6 +30,24 @@ function qHTML(q,cid){
     return rowHTML(r,dkey(cid,q.nm,r.kir));}).join('')+'</div></div>';
 }
 
+/* ── 解答 ───────────────────────────────────────────────
+   questions.json の exams。見出し（要求）ごとに、登録した行を並びどおりにつなぐ。
+   行はそのまま参照するので、文を直せば解答も直る。隠す・覚えた印とは関係なく全文を出す。 */
+function ansHTML(data){
+ var idx={};
+ data.cats.forEach(function(c){c.questions.forEach(function(q){q.rows.forEach(function(r){
+  idx[dkey(c.id,q.nm,r.kir)]=r;});});});
+ return (data.exams||[]).map(function(ex){
+  return '<section class="ans-ex"><h2 class="ans-tt">'+esc(ex.title)+'</h2>'+
+   ex.items.map(function(it){
+    var body=it.refs.map(function(k){var r=idx[k];
+     return r?'<span class="ans-s">'+v(r.t+r.p+r.j)+'</span>':'';}).join('');
+    return '<div class="ans-it"><div class="ans-q"><span class="no">'+esc(it.no)+'</span>'+esc(it.q)+'</div>'+
+     (it.refs.length?'<p class="ans-a">'+body+'</p>':'<p class="ans-a none">（図示）</p>')+'</div>';
+   }).join('')+'</section>';
+ }).join('');
+}
+
 /* ── 覚えた行 ───────────────────────────────────────────
    行の見分けは「分類｜設問名｜切り口」。設問データには何も書き込まず、
    この端末の localStorage にだけ残す。文言を直すと印はその行だけ外れるが、
@@ -172,6 +190,7 @@ function loadFigs(){
 function init(data){
 loadDone(data);
 render(data);
+document.getElementById('ans').innerHTML=ansHTML(data);
 loadFigs();
  var B=document.body,root=document.documentElement;
  var q=document.getElementById('q'),vocd=document.getElementById('vocd');
@@ -263,7 +282,20 @@ loadFigs();
   list[oneIdx].classList.add('oncur');
   onebar.hidden=(view!=='one');
  }
+ /* 解答（丸ごと通読）。表示は本文の代わりに #ans を出す。分類・表示の切替で閉じる */
+ var ansOn=false,va=document.getElementById('va');
+ var ansEl=document.getElementById('ans'),catsEl=document.getElementById('cats');
+ function setAns(on){
+  ansOn=on;ansEl.hidden=!on;catsEl.hidden=on;
+  va.classList.toggle('on',on);va.setAttribute('aria-pressed',String(on));
+  VIEWS.forEach(function(k){vbtn[k].classList.toggle('on',!on&&k===view);
+   vbtn[k].setAttribute('aria-pressed',String(!on&&k===view));});
+  onebar.hidden=on||view!=='one';
+ }
+ va.addEventListener('click',function(){setAns(!ansOn);window.scrollTo({top:0,behavior:'auto'});});
+
  function setView(v){
+  if(ansOn)setAns(false);
   view=v;save('view',v);
   VIEWS.forEach(function(k){
    B.classList.toggle('v-'+k,k===v);
@@ -291,6 +323,7 @@ loadFigs();
   oneShow();window.scrollTo({top:0,behavior:'auto'});});
 
  function setCat(c){
+  if(ansOn)setAns(false);
   cur=c;oneIdx=0;
   ORDER.forEach(function(k){B.classList.remove(k==='all'?'all':'c-'+k);});
   B.classList.add('c-'+(c==='all'?'plan':c));

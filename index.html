@@ -14,6 +14,7 @@
 <button id="vl" type="button" class="on" aria-pressed="true">リスト</button>
 <button id="vc" type="button" aria-pressed="false">カード</button>
 <button id="vo" type="button" aria-pressed="false">1問送り</button>
+<button id="va" type="button" aria-pressed="false" title="答案を丸ごと通して読む">解答</button>
 </span>
 <button id="lgb" type="button" class="lgb" aria-expanded="false" aria-controls="intro">凡例 <i>＋</i></button>
 </div>
@@ -67,7 +68,7 @@
 <br>覚えた行は、切り口の左の<b>○</b>を押して印をつけます。ツールの<b>覚</b>（<kbd>5</kbd>）を押すたびに<b>全部 → 覚えた以外 → 覚えただけ</b>と変わります。印はこの端末にだけ残り、設問データは消えません。</div>
 </div>
 
-<div class="main"><div id="cats"></div></div>
+<div class="main"><div id="cats"></div><div id="ans" hidden></div></div>
 </div>
 <aside class="side" id="side" aria-label="性能語の一覧"></aside>
 <div class="onebar" id="onebar" hidden>

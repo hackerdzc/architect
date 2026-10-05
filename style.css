@@ -485,3 +485,15 @@ body.v-one .cat-hd{display:none}
 .loaderr code{font-family:"Archivo Narrow",monospace;font-weight:700;background:#fff;
  box-shadow:inset 0 0 0 1px var(--line);padding:1px 5px;white-space:nowrap}
 .loaderr-d{display:block;margin-top:7px;font-size:calc(11.5px*var(--s));color:var(--faint)}
+
+/* ── 解答（丸ごと通読）── */
+#ans{max-width:44em;margin:0 auto}
+.ans-ex{margin:0 0 2.4em}
+.ans-tt{font-size:calc(14px*var(--s));font-weight:700;color:var(--ink);
+ border-bottom:2px solid var(--ink);padding-bottom:.3em;margin:0 0 .8em}
+.ans-it{margin:0 0 1.3em}
+.ans-q{font-weight:700;color:var(--ink);margin-bottom:.35em}
+.ans-q .no{display:inline-block;min-width:3.2em;margin-right:.4em;color:var(--mute)}
+.ans-a{margin:0 0 0 3.6em;line-height:1.95;color:var(--ink)}
+.ans-a.none{color:var(--faint)}
+.ans-s{margin-right:.5em}
