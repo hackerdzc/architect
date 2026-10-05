@@ -33,17 +33,23 @@ function qHTML(q,cid){
 /* ── 解答 ───────────────────────────────────────────────
    questions.json の exams。見出し（要求）ごとに、登録した行を並びどおりにつなぐ。
    行はそのまま参照するので、文を直せば解答も直る。隠す・覚えた印とは関係なく全文を出す。 */
-function ansHTML(data){
- var idx={};
- data.cats.forEach(function(c){c.questions.forEach(function(q){q.rows.forEach(function(r){
-  idx[dkey(c.id,q.nm,r.kir)]=r;});});});
+/* 文の並び。「主語・目的・実施」と「主語・実施・目的」を切り替える。
+   実施を先に出すときは「…した。」を「…することで、」に、目的は「…に配慮した。」に直す。 */
+function revJ(j){return /した。$/.test(j)?j.replace(/した。$/,'することで、'):j.replace(/た。$/,'ることで、');}
+function revP(p){var s=p.replace(/、$/,'');
+ if(/て$/.test(s))return s.replace(/て$/,'た。');
+ return s+(/ように$/.test(s)?'配慮した。':'に配慮した。');}
+function sentHTML(s,ord){
+ var txt=ord==='tjp'?s.t+revJ(s.j)+revP(s.p):s.t+s.p+s.j;
+ return '<span class="ans-s">'+v(txt)+'</span>';}
+function ansHTML(data,ord){
  return (data.exams||[]).map(function(ex){
   return '<section class="ans-ex"><h2 class="ans-tt">'+esc(ex.title)+'</h2>'+
    ex.items.map(function(it){
-    var body=it.refs.map(function(k){var r=idx[k];
-     return r?'<span class="ans-s">'+v(r.t+r.p+r.j)+'</span>':'';}).join('');
-    return '<div class="ans-it"><div class="ans-q"><span class="no">'+esc(it.no)+'</span>'+esc(it.q)+'</div>'+
-     (it.refs.length?'<p class="ans-a">'+body+'</p>':'<p class="ans-a none">（図示）</p>')+'</div>';
+    var sens=(it.sentences||[]).map(function(s){return sentHTML(s,ord);}).join('');
+    return '<div class="ans-it"><div class="ans-q"><span class="no">'+esc(it.no)+'</span>'+
+     (it.cat?'<span class="ans-cat">'+esc(it.cat)+'</span>':'')+esc(it.q)+'</div>'+
+     (sens?'<p class="ans-a">'+sens+'</p>':'<p class="ans-a none">（図示）</p>')+'</div>';
    }).join('')+'</section>';
  }).join('');
 }
@@ -190,7 +196,6 @@ function loadFigs(){
 function init(data){
 loadDone(data);
 render(data);
-document.getElementById('ans').innerHTML=ansHTML(data);
 loadFigs();
  var B=document.body,root=document.documentElement;
  var q=document.getElementById('q'),vocd=document.getElementById('vocd');
@@ -284,6 +289,15 @@ loadFigs();
  }
  /* 解答（丸ごと通読）。表示は本文の代わりに #ans を出す。分類・表示の切替で閉じる */
  var ansOn=false,va=document.getElementById('va');
+ var ansOrd=load('ansord')==='tjp'?'tjp':'tpj';
+ function renderAns(){
+  document.getElementById('ans').innerHTML=
+   '<div class="ans-tools"><button id="ansOrd" type="button">'+
+   (ansOrd==='tpj'?'主語・目的・実施':'主語・実施・目的')+'</button></div>'+ansHTML(data,ansOrd);
+  document.getElementById('ansOrd').addEventListener('click',function(){
+   ansOrd=ansOrd==='tpj'?'tjp':'tpj';save('ansord',ansOrd);renderAns();});
+ }
+ renderAns();
  var ansEl=document.getElementById('ans'),catsEl=document.getElementById('cats');
  function setAns(on){
   ansOn=on;ansEl.hidden=!on;catsEl.hidden=on;

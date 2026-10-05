@@ -497,3 +497,8 @@ body.v-one .cat-hd{display:none}
 .ans-a{margin:0 0 0 3.6em;line-height:1.95;color:var(--ink)}
 .ans-a.none{color:var(--faint)}
 .ans-s{margin-right:.5em}
+.ans-tools{margin:0 0 1em}
+.ans-tools button{font:inherit;font-size:calc(10.5px*var(--s));font-weight:700;padding:.3em .8em;
+ border:1px solid var(--ink);background:#fff;color:var(--ink);cursor:pointer}
+.ans-cat{display:inline-block;font-size:.8em;font-weight:700;color:var(--mute);
+ border:1px solid var(--line);padding:0 .45em;margin-right:.5em;vertical-align:.1em}
