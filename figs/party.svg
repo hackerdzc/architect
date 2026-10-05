@@ -1,0 +1,87 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 610 430" role="img" aria-label="パーティールームの断面図">
+<defs>
+ <marker id="pty-ar" viewBox="0 0 8 8" refX="7" refY="4" markerWidth="7" markerHeight="7" orient="auto-start-reverse">
+  <path d="M0,0 L8,4 L0,8 Z" class="arh"/>
+ </marker>
+</defs>
+
+<!-- 躯体：スラブ・壁・梁 -->
+<g class="cl">
+ <rect x="60" y="30" width="412" height="6"/>
+ <rect x="60" y="180" width="74" height="6"/>
+ <rect x="60" y="330" width="74" height="8"/>
+ <rect x="164" y="330" width="316" height="8"/>
+ <rect x="166" y="30" width="8" height="308"/>
+ <rect x="464" y="30" width="8" height="308"/>
+ <rect x="311" y="36" width="14" height="11"/>
+ <rect x="311" y="338" width="14" height="14"/>
+</g>
+
+<!-- 天井：吊りボルトと振れ止め、天井面 -->
+<g class="th">
+ <path d="M190,36 V100 M240,36 V100 M340,36 V100 M390,36 V100 M440,36 V100"/>
+ <path d="M190,44 L240,92 M240,44 L190,92 M390,44 L440,92 M440,44 L390,92"/>
+</g>
+<path class="ceil" d="M174,100 H464"/>
+
+<!-- DS（点線）と SA・RA ダクト -->
+<rect class="ds" x="134" y="36" width="30" height="294"/>
+<path class="du" d="M139,420 V52 H455 V62 H147 V420 Z"/>
+<path class="du ra" d="M153,420 V303 H178 V313 H161 V420 Z"/>
+<rect class="grille" x="174" y="298" width="6" height="20"/>
+<g class="du">
+ <rect x="213" y="62" width="4" height="34"/><rect x="263" y="62" width="4" height="34"/>
+ <rect x="313" y="62" width="4" height="34"/><rect x="363" y="62" width="4" height="34"/>
+ <rect x="413" y="62" width="4" height="34"/>
+</g>
+<g class="cl">
+ <rect x="206" y="96" width="18" height="4"/><rect x="256" y="96" width="18" height="4"/>
+ <rect x="306" y="96" width="18" height="4"/><rect x="356" y="96" width="18" height="4"/>
+ <rect x="406" y="96" width="18" height="4"/>
+</g>
+<g class="air-a">
+ <path d="M215,104 V120 M265,104 V120 M315,104 V120 M365,104 V120 M415,104 V120"/>
+ <path d="M143,414 V396"/>
+ <path d="M157,396 V414"/>
+</g>
+<path class="air" d="M432,126 C466,215 424,302 186,308"/>
+
+<!-- 室名・部位名 -->
+<text class="rm" x="318" y="220" text-anchor="middle" font-size="15">パーティールーム</text>
+<text class="lb" x="236" y="18" font-size="11">ＳＡダクト</text>
+<path class="ld" d="M288,21 L322,52"/>
+<text class="lb" x="100" y="116" text-anchor="middle" font-size="11">ＤＳ</text>
+<path class="ld" d="M110,112 L134,104"/>
+<text class="lb" x="126" y="262" text-anchor="end" font-size="11">ＲＡダクト</text>
+<path class="ld" d="M100,266 L153,340"/>
+<g class="d w" transform="translate(402,146)"><text text-anchor="middle" font-size="11">給気口</text></g>
+<path class="ld" d="M402,134 L414,101"/>
+<g class="d w" transform="translate(236,284)"><text text-anchor="middle" font-size="11">吸込口</text></g>
+<path class="ld" d="M218,286 L181,302"/>
+<text class="lb" x="150" y="428" text-anchor="middle" font-size="11">空調機械室（地下1階）</text>
+
+<!-- レベル -->
+<g class="lv" font-size="11">
+ <text x="8" y="26">▽RFL</text><text x="8" y="176">▽2FL</text><text x="8" y="326">▽1FL</text>
+</g>
+
+<!-- 寸法線 -->
+<g class="dm">
+ <path d="M476,30 H562 M476,36 H492 M470,100 H492 M476,180 H526 M480,330 H562"/>
+ <path d="M486,30 V330 M520,30 V330 M556,30 V330"/>
+ <path d="M482,104 L490,96 M482,40 L490,32 M482,334 L490,326 M482,34 L490,26
+          M516,34 L524,26 M516,184 L524,176 M516,334 L524,326
+          M552,34 L560,26 M552,334 L560,326"/>
+</g>
+<g class="d" transform="translate(499,215) rotate(-90)"><text text-anchor="middle" font-size="12">7,400</text></g>
+<g class="d" transform="translate(499,68) rotate(-90)"><text text-anchor="middle" font-size="12">2,000</text></g>
+<g class="d" transform="translate(486,18)"><text text-anchor="middle" font-size="11">200</text></g>
+<g class="d" transform="translate(533,255) rotate(-90)"><text text-anchor="middle" font-size="12">4,800</text></g>
+<g class="d" transform="translate(533,105) rotate(-90)"><text text-anchor="middle" font-size="12">4,800</text></g>
+<g class="d" transform="translate(569,180) rotate(-90)"><text text-anchor="middle" font-size="12">9,600</text></g>
+
+<!-- 注記の番号（下の文とつながる） -->
+<g class="mk" data-no="1" transform="translate(593,180)"><circle r="10"/><text y="4.5" text-anchor="middle" font-size="12">1</text></g>
+<g class="mk" data-no="2" transform="translate(290,81)"><circle r="10"/><text y="4.5" text-anchor="middle" font-size="12">2</text></g>
+<g class="mk" data-no="3" transform="translate(100,142)"><circle r="10"/><text y="4.5" text-anchor="middle" font-size="12">3</text></g>
+</svg>
