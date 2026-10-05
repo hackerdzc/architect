@@ -502,3 +502,24 @@ body.v-one .cat-hd{display:none}
  border:1px solid var(--ink);background:#fff;color:var(--ink);cursor:pointer}
 .ans-cat{display:inline-block;font-size:.8em;font-weight:700;color:var(--mute);
  border:1px solid var(--line);padding:0 .45em;margin-right:.5em;vertical-align:.1em}
+
+/* ── 解答：1問ずつ ── */
+.ans-one{max-width:44em;margin:0 auto}
+.ans-card{border:1px solid var(--line);padding:1em 1.1em 1.2em;background:#fff}
+.ans-meta{display:flex;flex-wrap:wrap;gap:.6em;align-items:center;font-size:calc(11px*var(--s));color:var(--mute);margin-bottom:.6em}
+.ans-ex-nm{flex:1 1 auto}
+.ans-qq{font-weight:700;color:var(--ink);margin-bottom:.8em;line-height:1.6}
+.ans-qq .no{display:inline-block;min-width:3.2em;margin-right:.4em;color:var(--mute)}
+.ans-card .ans-a{margin:0 0 1em 0;min-height:6em;line-height:2}
+.ans-ph{display:inline-block;color:var(--faint);border-bottom:1px dashed var(--line);margin-right:.5em;position:relative}
+.ans-ph i{font-style:normal;font-size:.75em;color:var(--mute);margin-left:.4em}
+.ans-ctl{display:flex;flex-wrap:wrap;gap:.4em}
+.ans-ctl button,.ans-tools button,.ans-tools select{font:inherit;font-size:calc(10.5px*var(--s));font-weight:700;
+ padding:.35em .8em;border:1px solid var(--ink);background:#fff;color:var(--ink);cursor:pointer}
+.ans-ctl button:disabled{opacity:.35;cursor:default}
+.ans-ctl button.pri{background:var(--ink);color:#fff}
+.ans-pos{margin-left:auto}
+.ans-none{color:var(--faint)}
+.ans-tools{display:flex;flex-wrap:wrap;gap:.4em;align-items:center;margin:0 0 1em}
+.ans-chips{display:inline-flex;flex-wrap:wrap;gap:.3em}
+.ans-chips button.on{background:var(--ink);color:#fff}
